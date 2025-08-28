@@ -536,15 +536,17 @@
                 const header = e.target.closest('.accordion-header');
                 if (header) {
                     const content = header.nextElementSibling;
-                    const icon = header.querySelector('i');
-                    content.classList.toggle('open');
-                    icon.classList.toggle('rotate-180');
-                    if(content.classList.contains('open')) {
-                        content.style.paddingTop = '1rem';
-                        content.style.paddingBottom = '1rem';
-                    } else {
-                        content.style.paddingTop = '0';
-                        content.style.paddingBottom = '0';
+                    const icon = header.querySelector('svg');
+                    if (content && icon) {
+                        content.classList.toggle('open');
+                        icon.classList.toggle('rotate-180');
+                        if(content.classList.contains('open')) {
+                            content.style.paddingTop = '1rem';
+                            content.style.paddingBottom = '1rem';
+                        } else {
+                            content.style.paddingTop = '0';
+                            content.style.paddingBottom = '0';
+                        }
                     }
                 }
                 const descButton = e.target.closest('.show-description-button');
@@ -567,8 +569,10 @@
 
             function init() {
                 // 初期状態の猫データを生成
-                for (let i = 0; i < state.catCount; i++) {
-                    state.cats.push({ name: '', sex: '', age: '', weight: '', exams: {} });
+                if (state.cats.length === 0) {
+                    for (let i = 0; i < state.catCount; i++) {
+                        state.cats.push({ name: '', sex: '', age: '', weight: '', exams: {} });
+                    }
                 }
                 renderCatInfoForms();
                 renderCatTabs();
