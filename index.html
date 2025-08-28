@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>猫の往診用 事前問診フォーム</title>
+    <!-- Tailwind CSS と アイコンライブラリ(Lucide) をCDN経で読み込み -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* アコーディオンのアニメーション */
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+        }
+        .accordion-content.open {
+            max-height: 2000px; /* 十分な高さを確保 */
+            transition: max-height 0.5s ease-in, padding 0.5s ease-in;
+        }
+        /* タブのスタイル */
+        .tab-button.active {
+            border-color: #3b82f6; /* blue-500 */
+            color: #3b82f6;
+            background-color: #eff6ff; /* blue-50 */
+        }
+        /* チェックボックスとラジオボタンのカスタムスタイル */
+        .custom-checkbox:checked {
+            background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+        .custom-checkbox:disabled {
+            background-color: #e5e7eb;
+            border-color: #d1d5db;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+
+    <div class="container mx-auto max-w-4xl p-4 sm:p-6 md:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">往診 事前問診フォーム</h1>
+            <p class="mt-2 text-gray-600">ご来訪前に、猫ちゃんたちの情報をご入力ください。</p>
+        </header>
+
+        <main class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg space-y-10">
+            <!-- Step 1: 基本情報 -->
+            <div id="step1">
+                <h2 class="text-2xl font-semibold mb-4 border-l-4 border-blue-500 pl-4">基本情報</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 items-start">
+                    <div>
+                        <label for="catCount" class="block text-sm font-medium text-gray-700 mb-1">受診する猫の総数</label>
+                        <input type="number" id="catCount" min="1" value="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                    </div>
+                    <div>
+                        <label for="firstVisitCount" class="block text-sm font-medium text-gray-700 mb-1">そのうち初診の猫の数</label>
+                        <input type="number" id="firstVisitCount" min="0" value="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                        <p class="text-xs text-gray-500 mt-1">（当院の往診が初めてで、カルテ作成が必要な子の数）</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: 猫ごとの情報入力 -->
+            <div id="step2">
+                <h2 class="text-2xl font-semibold mb-4 border-l-4 border-blue-500 pl-4">猫ちゃんたちの情報</h2>
+                <div id="cat-info-container" class="space-y-6">
+                    <!-- 猫の情報フォームがここに追加されます -->
+                </div>
+            </div>
+
+            <!-- Step 3: 検査項目選択 -->
+            <div id="step3">
+                <h2 class="text-2xl font-semibold mb-4 border-l-4 border-blue-500 pl-4">ご希望の診察・検査内容</h2>
+                <!-- 猫選択タブ -->
+                <div id="cat-tabs" class="mb-4 border-b border-gray-200">
+                    <!-- タブがここに追加されます -->
+                </div>
+                <!-- 検査項目コンテナ -->
+                <div id="exam-container" class="space-y-4">
+                    <!-- 検査項目がここに追加されます -->
+                </div>
+            </div>
+
+            <!-- Step 4: 症状・ご要望など -->
+            <div id="additional-notes">
+                <h2 class="text-2xl font-semibold mb-4 border-l-4 border-blue-500 pl-4">症状・ご要望など</h2>
+                <div class="space-y-6">
+                    <div>
+                        <label for="symptomsNotes" class="block text-sm font-medium text-gray-700 mb-1">現在の症状や気になること</label>
+                        <textarea id="symptomsNotes" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="例：3日前から食欲がなく、時々吐いている。"></textarea>
+                    </div>
+                    <div>
+                        <label for="additionalRequests" class="block text-sm font-medium text-gray-700 mb-1">追加の要望や検査・処置</label>
+                        <textarea id="additionalRequests" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="例：爪切りもお願いしたい。"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: 確認 -->
+            <div id="step5">
+                 <h2 class="text-2xl font-semibold mb-6 border-l-4 border-blue-500 pl-4">ご入力内容の確認</h2>
+                 <div id="confirmation-summary" class="space-y-6 bg-gray-50 p-6 rounded-lg">
+                    <!-- 確認内容がここに表示されます -->
+                 </div>
+                 <div class="mt-6 text-sm text-gray-600 space-y-2">
+                    <p>※ 診察料には身体検査（視診、触診、聴診など）が含まれます。飼育環境確認やフード相談も可能です。</p>
+                    <p>※ その他の検査をご希望の場合は、別途ご相談ください。</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- 金額表示 & 送信ボタン フッター -->
+        <footer class="sticky bottom-0 mt-8 bg-white/80 backdrop-blur-sm border-t border-gray-200 p-4 rounded-t-2xl shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.05)]">
+            <div class="max-w-4xl mx-auto flex justify-between items-center">
+                <div>
+                    <p class="text-sm text-gray-600">概算合計金額 (税込)</p>
+                    <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="total-price">0 円</p>
+                </div>
+                <button id="submit-button" class="bg-blue-600 text-white font-bold py-3 px-6 sm:px-8 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all transform hover:scale-105 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:scale-100">
+                    <span id="submit-button-text">内容を確認して送信</span>
+                </button>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- モーダル -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full max-h-[80vh] overflow-y-auto" id="modal-container">
+            <!-- モーダルの内容はJSで動的に設定 -->
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- 状態管理オブジェクト ---
+            let state = {
+                catCount: 1,
+                firstVisitCount: 0,
+                cats: [], // { name, sex, age, weight, exams: {} }
+                activeCatIndex: 0,
+                symptomsNotes: '',
+                additionalRequests: ''
+            };
+
+            // --- 検査項目データ ---
+            const examData = {
+                '予防薬': {
+                    type: 'radio',
+                    items: {
+                        'bravecto': { name: 'ブラベクトプラス (3ヶ月毎)', price: 4760, description: 'ノミ・マダニ・お腹の寄生虫（回虫・鉤虫）を駆除。効果が3ヶ月持続します。<br><strong>＜体重別＞</strong><br><small>・1.2kg ~ 2.8kg<br>・2.8kg超 ~ 6.25kg<br>・6.25kg超 ~ 12.5kg</small>' },
+                        'revolution': { name: 'レボリューションプラス (1ヶ月毎)', price: 1500, description: 'ノミ・マダニ・お腹の寄生虫（回虫・鉤虫）・フィラリアを予防する標準的なお薬です。毎月1回の投薬です。<br><strong>＜体重別＞</strong><br><small>・2.5kg未満<br>・2.5kg以上 ~ 5.0kg未満<br>・5.0kg以上 ~ 10.0kg未満</small>' },
+                        'nexgard': { name: 'ネクスガードキャットコンボ (1ヶ月毎)', price: 2000, description: 'レボリューションプラスのカバー範囲に加え、<strong>お腹の寄生虫（条虫）</strong>にも効果がある、より広範囲な予防薬です。毎月1回の投薬です。<br><strong>＜体重別＞</strong><br><small>・0.8kg ~ 2.5kg未満<br>・2.5kg以上 ~ 7.5kg未満<br>・7.5kg以上 ~ 10.0kg未満</small>' },
+                    }
+                },
+                '血液検査': {
+                    type: 'checkbox',
+                    items: {
+                        'biochem': { name: '生化学19項目 + 血球計算', price: 6000, description: '血液中の様々な成分を測定し、肝臓、腎臓、膵臓などの内臓の健康状態や、貧血、炎症の有無などを総合的に評価します。健康診断の基本となる検査です。<br><strong>＜項目＞</strong><br><small>TP, Alb, A/G比, T-Bil, AST, ALT, ALP, γ-GTP, Lipa, BUN, Cre, T-Cho, TG, Ca, IP, Glu, Na, K, Cl</small>' },
+                        't4': { name: '【オプション】T4', price: 3000, description: '甲状腺ホルモンの値を測定します。特に高齢の猫で多く見られる「甲状腺機能亢進症」の診断に役立ちます。飲水量が多い、食欲旺盛なのに痩せてきた、などの症状がある場合におすすめです。', isOption: true },
+                        'ga': { name: '【オプション】グリコアルブミン (GA)', price: 3000, description: '過去2〜3週間の平均血糖値を反映する指標です。糖尿病の診断や、治療中のコントロール状態の評価に用いられます。', isOption: true },
+                        'saa': { name: '【オプション】炎症マーカーSAA', price: 2000, description: '猫の体内で炎症が起きると急激に増加するタンパク質です。隠れた炎症性疾患や感染症の早期発見、治療効果の判定に役立ちます。', isOption: true }
+                    }
+                },
+                '超音波検査': {
+                    type: 'checkbox',
+                    items: {
+                        'echo': { name: '腹部精査 (+簡易心臓エコー含む)', price: 7000, description: '超音波を使って、お腹の中の臓器（肝臓、腎臓、消化管、膀胱など）の形や内部構造をリアルタイムで観察します。レントゲンではわからない詳細な情報を得ることができます。心臓も簡易的にチェックします。' }
+                    }
+                },
+                '便検査': {
+                    type: 'checkbox',
+                    items: {
+                        'feces_general': { name: '一般糞便検査', price: 2000, description: '顕微鏡で便を直接観察し、消化状態や腸内細菌のバランス、異常な細胞の有無などを調べます。' },
+                        'feces_parasite': { name: '寄生虫検査', price: 3000, description: '特殊な検査法を用いて、肉眼では見えない寄生虫の卵や原虫（ジアルジアなど）がいないかを確認します。<br><strong>＜対象＞</strong><br><small>回虫, 鉤虫, 鞭虫, 瓜実条虫, コクシジウム, ジアルジア</small>' },
+                        'feces_pcr': { name: 'PCR検査 (下痢パネル)', price: 23000, description: '下痢の原因となる特定のウイルスや細菌、原虫の遺伝子を検出する精密検査です。原因不明の頑固な下痢が続く場合に推奨されます。<br><strong>＜対象＞</strong><br><small>猫コロナウイルス, 猫汎白血球減少症ウイルス, クロストリジウム, ジアルジア, クリプトスポリジウム, サルモネラ, トリコモナス, トキソプラズマ, カンピロバクター</small>' },
+                    }
+                },
+                '尿検査': {
+                    type: 'checkbox',
+                    items: {
+                        'urine': { name: '尿検査', price: 1000, description: '尿の濃さ（比重）や、試験紙を使って尿中の糖、タンパク、潜血などを調べます。腎臓病や膀胱炎、糖尿病などの早期発見に繋がります。' }
+                    }
+                },
+                'ワクチン': {
+                    type: 'checkbox',
+                    items: {
+                        'vaccine': { name: '3種混合ワクチン', price: 4000, description: '猫の日常生活で感染リスクの高い3つの主要なウイルス感染症（猫ウイルス性鼻気管炎, 猫カリシウイルス感染症, 猫汎白血球減少症）を予防します。' }
+                    }
+                }
+            };
+
+            // --- DOM要素の取得 ---
+            const catCountInput = document.getElementById('catCount');
+            const firstVisitCountInput = document.getElementById('firstVisitCount');
+            const catInfoContainer = document.getElementById('cat-info-container');
+            const catTabs = document.getElementById('cat-tabs');
+            const examContainer = document.getElementById('exam-container');
+            const symptomsNotesInput = document.getElementById('symptomsNotes');
+            const additionalRequestsInput = document.getElementById('additionalRequests');
+            const totalPriceEl = document.getElementById('total-price');
+            const confirmationSummary = document.getElementById('confirmation-summary');
+            const submitButton = document.getElementById('submit-button');
+            const modal = document.getElementById('modal');
+            const modalContainer = document.getElementById('modal-container');
+
+            // --- レンダリング関数 ---
+
+            function renderCatInfoForms() {
+                catInfoContainer.innerHTML = '';
+                for (let i = 0; i < state.catCount; i++) {
+                    const cat = state.cats[i] || { name: '', sex: '', age: '', weight: '' };
+                    const formHTML = `
+                        <div class="border border-gray-200 p-4 rounded-lg" data-cat-index="${i}">
+                            <p class="font-semibold text-lg mb-3 text-gray-800">${i + 1}匹目の猫ちゃん</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div class="lg:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">名前</label>
+                                    <input type="text" data-field="name" value="${cat.name}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500" placeholder="例：タマ">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">性別 (避妊去勢)</label>
+                                    <select data-field="sex" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500">
+                                        <option value="" ${cat.sex === '' ? 'selected' : ''}>選択</option>
+                                        <option value="オス(未去勢)" ${cat.sex === 'オス(未去勢)' ? 'selected' : ''}>オス (未去勢)</option>
+                                        <option value="オス(去勢済)" ${cat.sex === 'オス(去勢済)' ? 'selected' : ''}>オス (去勢済)</option>
+                                        <option value="メス(未避妊)" ${cat.sex === 'メス(未避妊)' ? 'selected' : ''}>メス (未避妊)</option>
+                                        <option value="メス(避妊済)" ${cat.sex === 'メス(避妊済)' ? 'selected' : ''}>メス (避妊済)</option>
+                                    </select>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">年齢</label>
+                                        <input type="number" data-field="age" value="${cat.age}" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500" placeholder="例：5">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">体重(kg)</label>
+                                        <input type="number" data-field="weight" value="${cat.weight}" min="0" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500" placeholder="例：4.5">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    catInfoContainer.insertAdjacentHTML('beforeend', formHTML);
+                }
+            }
+
+            function renderCatTabs() {
+                catTabs.innerHTML = '';
+                state.cats.forEach((cat, index) => {
+                    const catName = cat.name || `猫 ${index + 1}`;
+                    const isActive = index === state.activeCatIndex;
+                    const buttonHTML = `
+                        <button class="tab-button px-4 py-2 text-sm font-medium border-b-2 transition-colors duration-200 ${isActive ? 'active' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}" data-cat-index="${index}">
+                            ${catName}
+                        </button>
+                    `;
+                    catTabs.insertAdjacentHTML('beforeend', buttonHTML);
+                });
+            }
+
+            function renderExams() {
+                examContainer.innerHTML = '';
+                const activeCatExams = state.cats[state.activeCatIndex]?.exams || {};
+
+                Object.entries(examData).forEach(([category, data]) => {
+                    const accordionHTML = `
+                        <div class="border border-gray-200 rounded-lg">
+                            <button class="accordion-header w-full flex justify-between items-center p-4 text-left font-semibold text-lg">
+                                ${category}
+                                <i data-lucide="chevron-down" class="transition-transform duration-300"></i>
+                            </button>
+                            <div class="accordion-content px-4">
+                                <div class="py-4 border-t border-gray-200 space-y-4">
+                                    ${Object.entries(data.items).map(([key, item]) => {
+                                        const isOption = item.isOption;
+                                        const isBiochemChecked = activeCatExams['biochem'];
+                                        const isDisabled = isOption && !isBiochemChecked;
+                                        const labelClasses = isDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 cursor-pointer';
+
+                                        return `
+                                        <label class="flex items-start p-3 rounded-md transition ${labelClasses}">
+                                            <input type="${data.type}" name="${category}-${state.activeCatIndex}" value="${key}" data-price="${item.price}" class="custom-checkbox mt-1 h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" ${activeCatExams[key] ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
+                                            <div class="ml-3 text-sm flex-grow">
+                                                <span class="font-medium text-gray-900">${item.name}</span>
+                                                <p class="text-gray-500">${item.price.toLocaleString()} 円</p>
+                                            </div>
+                                            <button class="show-description-button text-blue-500 hover:text-blue-700 p-1" data-title="${item.name}" data-description="${item.description}">
+                                                <i data-lucide="info" class="w-5 h-5"></i>
+                                            </button>
+                                        </label>
+                                    `}).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    examContainer.insertAdjacentHTML('beforeend', accordionHTML);
+                });
+                lucide.createIcons();
+            }
+            
+            function renderConfirmation() {
+                confirmationSummary.innerHTML = '';
+                let catSummaryHTML = '';
+                let subtotalExams = 0;
+
+                state.cats.forEach(cat => {
+                    const catName = cat.name || '(名前未入力)';
+                    let examListHTML = '';
+                    let catTotalPrice = 0;
+
+                    Object.entries(cat.exams).forEach(([examKey, isChecked]) => {
+                        if (!isChecked) return;
+                        
+                        for (const category in examData) {
+                            if (examData[category].items[examKey]) {
+                                const item = examData[category].items[examKey];
+                                examListHTML += `<li class="flex justify-between"><span>${item.name}</span><span>${item.price.toLocaleString()} 円</span></li>`;
+                                catTotalPrice += item.price;
+                                break;
+                            }
+                        }
+                    });
+                    subtotalExams += catTotalPrice;
+
+                    if(examListHTML === '') {
+                        examListHTML = '<li>検査項目の選択がありません</li>';
+                    }
+
+                    catSummaryHTML += `
+                        <div class="pb-4">
+                            <h4 class="font-semibold text-lg text-gray-800">${catName} <span class="text-sm font-normal">(${cat.sex || '性別未選択'}, ${cat.age || '?'}歳, ${cat.weight || '?'} kg)</span></h4>
+                            <ul class="mt-2 pl-4 text-gray-600 space-y-1 text-sm">
+                                ${examListHTML}
+                            </ul>
+                            <p class="text-right font-semibold mt-2 text-gray-700">小計: ${catTotalPrice.toLocaleString()} 円</p>
+                        </div>
+                    `;
+                });
+                
+                const visitFee = 5000;
+                const consultationFee = state.catCount * 2000;
+                const preTaxTotal = visitFee + consultationFee + subtotalExams;
+                const tax = Math.floor(preTaxTotal * 0.1);
+                const finalTotal = preTaxTotal + tax;
+
+                const basicInfoHTML = `
+                    <div>
+                        <h3 class="text-xl font-bold mb-3 text-gray-900">基本情報</h3>
+                        <div class="grid grid-cols-2 gap-2 text-sm">
+                            <span class="text-gray-600">受診総数:</span> <span class="font-medium">${state.catCount} 匹</span>
+                            <span class="text-gray-600">うち初診:</span> <span class="font-medium">${state.firstVisitCount} 匹</span>
+                        </div>
+                    </div>
+                `;
+                const examsInfoHTML = `
+                    <div>
+                        <h3 class="text-xl font-bold mb-3 text-gray-900">検査内容</h3>
+                        <div class="space-y-4">${catSummaryHTML}</div>
+                    </div>
+                `;
+                const notesHTML = `
+                    <div>
+                        <h3 class="text-xl font-bold mb-3 text-gray-900">症状・ご要望</h3>
+                        <div class="text-sm space-y-3">
+                            <div>
+                                <p class="font-semibold text-gray-700">現在の症状や気になること:</p>
+                                <p class="mt-1 p-2 bg-white rounded text-gray-600 whitespace-pre-wrap min-h-[40px]">${state.symptomsNotes || '<span class="text-gray-400">入力なし</span>'}</p>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-700">追加の要望や検査・処置:</p>
+                                <p class="mt-1 p-2 bg-white rounded text-gray-600 whitespace-pre-wrap min-h-[40px]">${state.additionalRequests || '<span class="text-gray-400">入力なし</span>'}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                 const pricingHTML = `
+                    <div>
+                        <h3 class="text-xl font-bold mb-3 text-gray-900">料金概算</h3>
+                        <div class="space-y-1 text-sm">
+                            <div class="flex justify-between"><span class="text-gray-600">検査料金 合計:</span> <span>${subtotalExams.toLocaleString()} 円</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600">診察料 (${state.catCount}匹):</span> <span>${consultationFee.toLocaleString()} 円</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600">往診料:</span> <span>${visitFee.toLocaleString()} 円</span></div>
+                            <div class="flex justify-between font-semibold border-t pt-1 mt-1"><span class="text-gray-700">小計 (税抜):</span> <span>${preTaxTotal.toLocaleString()} 円</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600">消費税 (10%):</span> <span>${tax.toLocaleString()} 円</span></div>
+                            <div class="flex justify-between font-bold text-lg border-t pt-1 mt-1"><span class="text-gray-800">合計 (税込):</span> <span>${finalTotal.toLocaleString()} 円</span></div>
+                        </div>
+                    </div>
+                `;
+
+                confirmationSummary.insertAdjacentHTML('beforeend', basicInfoHTML);
+                confirmationSummary.insertAdjacentHTML('beforeend', examsInfoHTML);
+                confirmationSummary.insertAdjacentHTML('beforeend', notesHTML);
+                confirmationSummary.insertAdjacentHTML('beforeend', pricingHTML);
+            }
+
+            function calculateTotal() {
+                let subtotalExams = 0;
+                state.cats.forEach(cat => {
+                    Object.entries(cat.exams).forEach(([examKey, isChecked]) => {
+                        if (isChecked) {
+                            for (const category in examData) {
+                                if (examData[category].items[examKey]) {
+                                    subtotalExams += examData[category].items[examKey].price;
+                                    break;
+                                }
+                            }
+                        }
+                    });
+                });
+                
+                const visitFee = 5000;
+                const consultationFee = state.catCount * 2000;
+                const preTaxTotal = visitFee + consultationFee + subtotalExams;
+                const tax = Math.floor(preTaxTotal * 0.1);
+                const finalTotal = preTaxTotal + tax;
+
+                totalPriceEl.textContent = `${finalTotal.toLocaleString()} 円`;
+                renderConfirmation();
+            }
+
+            function updateStateFromDOM() {
+                const newCatCount = parseInt(catCountInput.value) || 1;
+                if (newCatCount !== state.catCount) {
+                    state.catCount = newCatCount;
+                    while (state.cats.length < state.catCount) {
+                        state.cats.push({ name: '', sex: '', age: '', weight: '', exams: {} });
+                    }
+                    state.cats.length = state.catCount;
+                    if (state.activeCatIndex >= state.catCount) {
+                        state.activeCatIndex = 0;
+                    }
+                    renderCatInfoForms();
+                    renderCatTabs();
+                    renderExams();
+                }
+                
+                state.firstVisitCount = parseInt(firstVisitCountInput.value) || 0;
+
+                document.querySelectorAll('#cat-info-container > div').forEach((form, index) => {
+                    if (state.cats[index]) {
+                        state.cats[index].name = form.querySelector('[data-field="name"]').value;
+                        state.cats[index].sex = form.querySelector('[data-field="sex"]').value;
+                        state.cats[index].age = form.querySelector('[data-field="age"]').value;
+                        state.cats[index].weight = form.querySelector('[data-field="weight"]').value;
+                    }
+                });
+                
+                state.symptomsNotes = symptomsNotesInput.value;
+                state.additionalRequests = additionalRequestsInput.value;
+
+                renderCatTabs();
+                calculateTotal();
+            }
+            
+            // --- イベントハンドラ ---
+            catCountInput.addEventListener('change', updateStateFromDOM);
+            firstVisitCountInput.addEventListener('change', updateStateFromDOM);
+            catInfoContainer.addEventListener('input', updateStateFromDOM);
+            symptomsNotesInput.addEventListener('input', updateStateFromDOM);
+            additionalRequestsInput.addEventListener('input', updateStateFromDOM);
+            
+            examContainer.addEventListener('change', (e) => {
+                if (e.target.matches('input[type="radio"], input[type="checkbox"]')) {
+                    const key = e.target.value;
+                    const isChecked = e.target.checked;
+                    const catExams = state.cats[state.activeCatIndex].exams;
+
+                    if (e.target.type === 'radio' && isChecked) {
+                        const category = Object.keys(examData).find(cat => examData[cat].items[key]);
+                        if (category) {
+                            Object.keys(examData[category].items).forEach(itemKey => {
+                                catExams[itemKey] = false;
+                            });
+                        }
+                    }
+                    
+                    catExams[key] = isChecked;
+
+                    if (key === 'biochem' && !isChecked) {
+                        Object.keys(examData['血液検査'].items).forEach(itemKey => {
+                            if (examData['血液検査'].items[itemKey].isOption) {
+                                catExams[itemKey] = false;
+                            }
+                        });
+                    }
+                    
+                    renderExams();
+                    calculateTotal();
+                }
+            });
+
+            catTabs.addEventListener('click', (e) => {
+                const button = e.target.closest('.tab-button');
+                if (button) {
+                    state.activeCatIndex = parseInt(button.dataset.catIndex);
+                    renderCatTabs();
+                    renderExams();
+                }
+            });
+            
+            function showDescriptionModal(title, description) {
+                modalContainer.innerHTML = `
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-bold text-gray-900">${title}</h3>
+                            <button class="modal-close-button text-gray-400 hover:text-gray-600">&times;</button>
+                        </div>
+                        <div class="text-gray-600 space-y-2 prose">${description}</div>
+                    </div>`;
+                modal.classList.remove('hidden');
+            }
+            
+            function showConfirmationModal() {
+                 modalContainer.innerHTML = `
+                    <div class="p-6 text-center">
+                        <i data-lucide="send" class="mx-auto w-12 h-12 text-blue-500"></i>
+                        <h3 class="text-xl font-bold text-gray-900 mt-4">内容の送信</h3>
+                        <p class="text-gray-600 mt-2">この内容で問診票を送信します。<br>よろしいですか？</p>
+                    </div>
+                    <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3 rounded-b-2xl">
+                        <button id="confirm-cancel-button" class="bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-gray-300 transition">キャンセル</button>
+                        <button id="confirm-submit-button" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition">送信する</button>
+                    </div>`;
+                lucide.createIcons();
+                modal.classList.remove('hidden');
+                
+                document.getElementById('confirm-submit-button').addEventListener('click', () => {
+                    console.log("送信データ:", state);
+                    alert("データがコンソールに送信されました。（実際にはここでサーバーに送信します）");
+                    modal.classList.add('hidden');
+                });
+            }
+
+            examContainer.addEventListener('click', (e) => {
+                const header = e.target.closest('.accordion-header');
+                if (header) {
+                    const content = header.nextElementSibling;
+                    const icon = header.querySelector('i');
+                    content.classList.toggle('open');
+                    icon.classList.toggle('rotate-180');
+                    if(content.classList.contains('open')) {
+                        content.style.paddingTop = '1rem';
+                        content.style.paddingBottom = '1rem';
+                    } else {
+                        content.style.paddingTop = '0';
+                        content.style.paddingBottom = '0';
+                    }
+                }
+                const descButton = e.target.closest('.show-description-button');
+                if (descButton) {
+                    e.preventDefault();
+                    showDescriptionModal(descButton.dataset.title, descButton.dataset.description);
+                }
+            });
+            
+            submitButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                showConfirmationModal();
+            });
+
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal || e.target.closest('.modal-close-button') || e.target.closest('#confirm-cancel-button')) {
+                    modal.classList.add('hidden');
+                }
+            });
+
+            function init() {
+                // 初期状態の猫データを生成
+                for (let i = 0; i < state.catCount; i++) {
+                    state.cats.push({ name: '', sex: '', age: '', weight: '', exams: {} });
+                }
+                renderCatInfoForms();
+                renderCatTabs();
+                renderExams();
+                calculateTotal();
+                lucide.createIcons();
+            }
+
+            init();
+        });
+    </script>
+</body>
+</html>
