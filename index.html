@@ -34,100 +34,154 @@
             background-color: #e5e7eb;
             border-color: #d1d5db;
         }
+        /* 印刷時用のスタイル */
+        @media print {
+            body {
+                background-color: white;
+            }
+            .no-print {
+                display: none;
+            }
+            main, .container {
+                padding: 0 !important;
+                box-shadow: none !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-50 font-sans text-gray-800">
 
     <div class="container mx-auto max-w-4xl p-4 sm:p-6 md:p-8">
-        <header class="text-center mb-8">
-            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">往診 事前問診フォーム</h1>
-            <p class="mt-2 text-gray-600">ご来訪前に、猫ちゃんたちの情報をご入力ください。</p>
-        </header>
+        <!-- ===== 入力フォームページ ===== -->
+        <div id="form-page">
+            <header class="text-center mb-8">
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">往診 事前問診フォーム</h1>
+                <p class="mt-2 text-gray-600">ご来訪前に、猫ちゃんたちの情報をご入力ください。</p>
+            </header>
 
-        <main class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg space-y-10">
-            <!-- Step 1: 基本情報 -->
-            <div id="step1">
-                <h2 class="text-2xl font-semibold mb-4 border-l-4 border-blue-500 pl-4">基本情報</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 items-start">
-                    <div>
-                        <label for="catCount" class="block text-sm font-medium text-gray-700 mb-1">受診する猫の総数</label>
-                        <input type="number" id="catCount" min="1" value="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-                    </div>
-                    <div>
-                        <label for="firstVisitCount" class="block text-sm font-medium text-gray-700 mb-1">そのうち初診の猫の数</label>
-                        <input type="number" id="firstVisitCount" min="0" value="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-                        <p class="text-xs text-gray-500 mt-1">（当院の往診が初めてで、カルテ作成が必要な子の数）</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Step 2: 猫ごとの情報入力 -->
-            <div id="step2">
-                <h2 class="text-2xl font-semibold mb-4 border-l-4 border-blue-500 pl-4">猫ちゃんたちの情報</h2>
-                <div id="cat-info-container" class="space-y-6">
-                    <!-- 猫の情報フォームがここに追加されます -->
-                </div>
-            </div>
-
-            <!-- Step 3: 検査項目選択 -->
-            <div id="step3">
-                <h2 class="text-2xl font-semibold mb-4 border-l-4 border-blue-500 pl-4">ご希望の診察・検査内容</h2>
-                <!-- 猫選択タブ -->
-                <div id="cat-tabs" class="mb-4 border-b border-gray-200">
-                    <!-- タブがここに追加されます -->
-                </div>
-                <!-- 検査項目コンテナ -->
-                <div id="exam-container" class="space-y-4">
-                    <!-- 検査項目がここに追加されます -->
-                </div>
-            </div>
-
-            <!-- Step 4: 症状・ご要望など -->
-            <div id="additional-notes">
-                <h2 class="text-2xl font-semibold mb-4 border-l-4 border-blue-500 pl-4">症状・ご要望など</h2>
-                <div class="space-y-6">
-                    <div>
-                        <label for="symptomsNotes" class="block text-sm font-medium text-gray-700 mb-1">現在の症状や気になること</label>
-                        <textarea id="symptomsNotes" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="例：3日前から食欲がなく、時々吐いている。"></textarea>
-                    </div>
-                    <div>
-                        <label for="additionalRequests" class="block text-sm font-medium text-gray-700 mb-1">追加の要望や検査・処置</label>
-                        <textarea id="additionalRequests" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="例：爪切りもお願いしたい。"></textarea>
+            <main class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg space-y-10">
+                <!-- Step 1: 基本情報 -->
+                <div id="step1">
+                    <h2 class="text-2xl font-semibold mb-4 border-l-4 border-blue-500 pl-4">基本情報</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 items-start">
+                        <div>
+                            <label for="catCount" class="block text-sm font-medium text-gray-700 mb-1">受診する猫の総数</label>
+                            <input type="number" id="catCount" min="1" value="1" readonly class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100">
+                        </div>
+                        <div>
+                            <label for="firstVisitCount" class="block text-sm font-medium text-gray-700 mb-1">そのうち初診の猫の数</label>
+                            <input type="number" id="firstVisitCount" min="0" value="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                            <p class="text-xs text-gray-500 mt-1">（当院の往診が初めてで、カルテ作成が必要な子の数）</p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Step 5: 確認 -->
-            <div id="step5">
-                 <h2 class="text-2xl font-semibold mb-6 border-l-4 border-blue-500 pl-4">ご入力内容の確認</h2>
-                 <div id="confirmation-summary" class="space-y-6 bg-gray-50 p-6 rounded-lg">
+                <!-- Step 2: 猫ごとの情報入力 -->
+                <div id="step2">
+                    <h2 class="text-2xl font-semibold mb-4 border-l-4 border-blue-500 pl-4">猫ちゃんたちの情報</h2>
+                    <div id="cat-info-container" class="space-y-6">
+                        <!-- 猫の情報フォームがここに追加されます -->
+                    </div>
+                    <div class="mt-4 flex justify-end space-x-2">
+                        <button id="remove-cat-button" class="bg-white border border-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-100 transition flex items-center disabled:opacity-50 disabled:cursor-not-allowed text-sm">
+                            <i data-lucide="minus" class="w-4 h-4 mr-1"></i>
+                            <span>最後の猫を削除</span>
+                        </button>
+                        <button id="add-cat-button" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 transition flex items-center text-sm">
+                            <i data-lucide="plus" class="w-4 h-4 mr-1"></i>
+                            <span>猫を追加</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: 検査項目選択 -->
+                <div id="step3">
+                    <h2 class="text-2xl font-semibold mb-4 border-l-4 border-blue-500 pl-4">ご希望の診察・検査内容</h2>
+                    <div id="cat-tabs" class="mb-4 border-b border-gray-200"></div>
+                    <div id="exam-container" class="space-y-4"></div>
+                </div>
+
+                <!-- Step 4: 症状・ご要望など -->
+                <div id="additional-notes">
+                    <h2 class="text-2xl font-semibold mb-4 border-l-4 border-blue-500 pl-4">症状・ご要望など</h2>
+                    <div class="space-y-6">
+                        <div>
+                            <label for="symptomsNotes" class="block text-sm font-medium text-gray-700 mb-1">現在の症状や気になること</label>
+                            <textarea id="symptomsNotes" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="例：3日前から食欲がなく、時々吐いている。"></textarea>
+                        </div>
+                        <div>
+                            <label for="additionalRequests" class="block text-sm font-medium text-gray-700 mb-1">追加の要望や検査・処置</label>
+                            <textarea id="additionalRequests" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="例：爪切りもお願いしたい。"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <footer class="sticky bottom-0 mt-8 bg-white/80 backdrop-blur-sm border-t border-gray-200 p-4 rounded-t-2xl shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.05)]">
+                <div class="max-w-4xl mx-auto flex justify-between items-center">
+                    <div>
+                        <p class="text-sm text-gray-600">概算合計金額 (税込)</p>
+                        <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="total-price">0 円</p>
+                    </div>
+                    <button id="show-confirm-button" class="bg-blue-600 text-white font-bold py-3 px-6 sm:px-8 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all transform hover:scale-105">
+                        内容を確認する
+                    </button>
+                </div>
+            </footer>
+        </div>
+
+        <!-- ===== 確認ページ ===== -->
+        <div id="confirmation-page" class="hidden">
+             <header class="text-center mb-8 no-print">
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">ご入力内容の確認</h1>
+                <p class="mt-2 text-gray-600">以下の内容で送信します。よろしければ送信ボタンを押してください。</p>
+            </header>
+            <main class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
+                <div id="confirmation-summary" class="space-y-6">
                     <!-- 確認内容がここに表示されます -->
-                 </div>
-                 <div class="mt-6 text-sm text-gray-600 space-y-2">
-                    <p>※ 診察料には身体検査（視診、触診、聴診など）が含まれます。飼育環境確認やフード相談も可能です。</p>
-                    <p>※ その他の検査をご希望の場合は、別途ご相談ください。</p>
                 </div>
-            </div>
-        </main>
-
-        <!-- 金額表示 & 送信ボタン フッター -->
-        <footer class="sticky bottom-0 mt-8 bg-white/80 backdrop-blur-sm border-t border-gray-200 p-4 rounded-t-2xl shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.05)]">
-            <div class="max-w-4xl mx-auto flex justify-between items-center">
-                <div>
-                    <p class="text-sm text-gray-600">概算合計金額 (税込)</p>
-                    <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="total-price">0 円</p>
+                 <div class="mt-8 pt-6 border-t no-print">
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i data-lucide="printer" class="h-5 w-5 text-blue-400"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-blue-700">
+                                    控えとして、このページを<strong>印刷</strong>または<strong>PDFとして保存</strong>することをお勧めします。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <button id="submit-button" class="bg-blue-600 text-white font-bold py-3 px-6 sm:px-8 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all transform hover:scale-105 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:scale-100">
-                    <span id="submit-button-text">内容を確認して送信</span>
-                </button>
-            </div>
-        </footer>
+                <div class="mt-8 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 no-print">
+                    <button id="edit-button" class="bg-white border border-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-100 transition flex items-center justify-center">
+                        <i data-lucide="edit-3" class="w-4 h-4 mr-2"></i>
+                        修正する
+                    </button>
+                     <button id="print-button" class="bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-700 transition flex items-center justify-center">
+                        <i data-lucide="printer" class="w-4 h-4 mr-2"></i>
+                        印刷する
+                    </button>
+                    <button id="final-submit-button" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition flex items-center justify-center">
+                        <i data-lucide="send" class="w-4 h-4 mr-2"></i>
+                        この内容で送信する
+                    </button>
+                </div>
+            </main>
+        </div>
     </div>
     
-    <!-- モーダル -->
-    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full max-h-[80vh] overflow-y-auto" id="modal-container">
-            <!-- モーダルの内容はJSで動的に設定 -->
+    <!-- モーダル (説明用) -->
+    <div id="description-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full max-h-[80vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 id="modal-title" class="text-xl font-bold text-gray-900"></h3>
+                    <button class="modal-close-button text-gray-400 hover:text-gray-600">&times;</button>
+                </div>
+                <div id="modal-content" class="text-gray-600 space-y-2 prose"></div>
+            </div>
         </div>
     </div>
 
@@ -191,18 +245,26 @@
             };
 
             // --- DOM要素の取得 ---
+            const formPage = document.getElementById('form-page');
+            const confirmationPage = document.getElementById('confirmation-page');
             const catCountInput = document.getElementById('catCount');
             const firstVisitCountInput = document.getElementById('firstVisitCount');
             const catInfoContainer = document.getElementById('cat-info-container');
+            const addCatButton = document.getElementById('add-cat-button');
+            const removeCatButton = document.getElementById('remove-cat-button');
             const catTabs = document.getElementById('cat-tabs');
             const examContainer = document.getElementById('exam-container');
             const symptomsNotesInput = document.getElementById('symptomsNotes');
             const additionalRequestsInput = document.getElementById('additionalRequests');
             const totalPriceEl = document.getElementById('total-price');
             const confirmationSummary = document.getElementById('confirmation-summary');
-            const submitButton = document.getElementById('submit-button');
-            const modal = document.getElementById('modal');
-            const modalContainer = document.getElementById('modal-container');
+            const showConfirmButton = document.getElementById('show-confirm-button');
+            const editButton = document.getElementById('edit-button');
+            const printButton = document.getElementById('print-button');
+            const finalSubmitButton = document.getElementById('final-submit-button');
+            const descriptionModal = document.getElementById('description-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalContent = document.getElementById('modal-content');
 
             // --- レンダリング関数 ---
 
@@ -346,8 +408,8 @@
 
                 const basicInfoHTML = `
                     <div>
-                        <h3 class="text-xl font-bold mb-3 text-gray-900">基本情報</h3>
-                        <div class="grid grid-cols-2 gap-2 text-sm">
+                        <h3 class="text-xl font-bold mb-3 text-gray-900 border-b pb-2">基本情報</h3>
+                        <div class="grid grid-cols-2 gap-2 text-sm mt-3">
                             <span class="text-gray-600">受診総数:</span> <span class="font-medium">${state.catCount} 匹</span>
                             <span class="text-gray-600">うち初診:</span> <span class="font-medium">${state.firstVisitCount} 匹</span>
                         </div>
@@ -355,29 +417,29 @@
                 `;
                 const examsInfoHTML = `
                     <div>
-                        <h3 class="text-xl font-bold mb-3 text-gray-900">検査内容</h3>
-                        <div class="space-y-4">${catSummaryHTML}</div>
+                        <h3 class="text-xl font-bold mb-3 text-gray-900 border-b pb-2">検査内容</h3>
+                        <div class="space-y-4 mt-3">${catSummaryHTML}</div>
                     </div>
                 `;
                 const notesHTML = `
                     <div>
-                        <h3 class="text-xl font-bold mb-3 text-gray-900">症状・ご要望</h3>
-                        <div class="text-sm space-y-3">
+                        <h3 class="text-xl font-bold mb-3 text-gray-900 border-b pb-2">症状・ご要望</h3>
+                        <div class="text-sm space-y-3 mt-3">
                             <div>
                                 <p class="font-semibold text-gray-700">現在の症状や気になること:</p>
-                                <p class="mt-1 p-2 bg-white rounded text-gray-600 whitespace-pre-wrap min-h-[40px]">${state.symptomsNotes || '<span class="text-gray-400">入力なし</span>'}</p>
+                                <p class="mt-1 p-2 bg-gray-100 rounded text-gray-800 whitespace-pre-wrap min-h-[40px]">${state.symptomsNotes || '<span class="text-gray-500">入力なし</span>'}</p>
                             </div>
                             <div>
                                 <p class="font-semibold text-gray-700">追加の要望や検査・処置:</p>
-                                <p class="mt-1 p-2 bg-white rounded text-gray-600 whitespace-pre-wrap min-h-[40px]">${state.additionalRequests || '<span class="text-gray-400">入力なし</span>'}</p>
+                                <p class="mt-1 p-2 bg-gray-100 rounded text-gray-800 whitespace-pre-wrap min-h-[40px]">${state.additionalRequests || '<span class="text-gray-500">入力なし</span>'}</p>
                             </div>
                         </div>
                     </div>
                 `;
                  const pricingHTML = `
                     <div>
-                        <h3 class="text-xl font-bold mb-3 text-gray-900">料金概算</h3>
-                        <div class="space-y-1 text-sm">
+                        <h3 class="text-xl font-bold mb-3 text-gray-900 border-b pb-2">料金概算</h3>
+                        <div class="space-y-1 text-sm mt-3">
                             <div class="flex justify-between"><span class="text-gray-600">検査料金 合計:</span> <span>${subtotalExams.toLocaleString()} 円</span></div>
                             <div class="flex justify-between"><span class="text-gray-600">診察料 (${state.catCount}匹):</span> <span>${consultationFee.toLocaleString()} 円</span></div>
                             <div class="flex justify-between"><span class="text-gray-600">往診料:</span> <span>${visitFee.toLocaleString()} 円</span></div>
@@ -416,11 +478,13 @@
                 const finalTotal = preTaxTotal + tax;
 
                 totalPriceEl.textContent = `${finalTotal.toLocaleString()} 円`;
-                renderConfirmation();
             }
 
             function updateStateFromDOM() {
                 const newCatCount = parseInt(catCountInput.value) || 1;
+                
+                removeCatButton.disabled = newCatCount <= 1;
+
                 if (newCatCount !== state.catCount) {
                     state.catCount = newCatCount;
                     while (state.cats.length < state.catCount) {
@@ -428,7 +492,7 @@
                     }
                     state.cats.length = state.catCount;
                     if (state.activeCatIndex >= state.catCount) {
-                        state.activeCatIndex = 0;
+                        state.activeCatIndex = state.catCount - 1;
                     }
                     renderCatInfoForms();
                     renderCatTabs();
@@ -460,6 +524,20 @@
             symptomsNotesInput.addEventListener('input', updateStateFromDOM);
             additionalRequestsInput.addEventListener('input', updateStateFromDOM);
             
+            addCatButton.addEventListener('click', () => {
+                const currentCount = parseInt(catCountInput.value);
+                catCountInput.value = currentCount + 1;
+                updateStateFromDOM();
+            });
+
+            removeCatButton.addEventListener('click', () => {
+                const currentCount = parseInt(catCountInput.value);
+                if (currentCount > 1) {
+                    catCountInput.value = currentCount - 1;
+                    updateStateFromDOM();
+                }
+            });
+
             examContainer.addEventListener('change', (e) => {
                 if (e.target.matches('input[type="radio"], input[type="checkbox"]')) {
                     const key = e.target.value;
@@ -500,36 +578,9 @@
             });
             
             function showDescriptionModal(title, description) {
-                modalContainer.innerHTML = `
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-xl font-bold text-gray-900">${title}</h3>
-                            <button class="modal-close-button text-gray-400 hover:text-gray-600">&times;</button>
-                        </div>
-                        <div class="text-gray-600 space-y-2 prose">${description}</div>
-                    </div>`;
-                modal.classList.remove('hidden');
-            }
-            
-            function showConfirmationModal() {
-                 modalContainer.innerHTML = `
-                    <div class="p-6 text-center">
-                        <i data-lucide="send" class="mx-auto w-12 h-12 text-blue-500"></i>
-                        <h3 class="text-xl font-bold text-gray-900 mt-4">内容の送信</h3>
-                        <p class="text-gray-600 mt-2">この内容で問診票を送信します。<br>よろしいですか？</p>
-                    </div>
-                    <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3 rounded-b-2xl">
-                        <button id="confirm-cancel-button" class="bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-gray-300 transition">キャンセル</button>
-                        <button id="confirm-submit-button" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition">送信する</button>
-                    </div>`;
-                lucide.createIcons();
-                modal.classList.remove('hidden');
-                
-                document.getElementById('confirm-submit-button').addEventListener('click', () => {
-                    console.log("送信データ:", state);
-                    alert("データがコンソールに送信されました。（実際にはここでサーバーに送信します）");
-                    modal.classList.add('hidden');
-                });
+                modalTitle.textContent = title;
+                modalContent.innerHTML = description;
+                descriptionModal.classList.remove('hidden');
             }
 
             examContainer.addEventListener('click', (e) => {
@@ -556,24 +607,41 @@
                 }
             });
             
-            submitButton.addEventListener('click', (e) => {
-                e.preventDefault();
-                showConfirmationModal();
+            showConfirmButton.addEventListener('click', () => {
+                renderConfirmation();
+                formPage.classList.add('hidden');
+                confirmationPage.classList.remove('hidden');
+                window.scrollTo(0, 0);
             });
 
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal || e.target.closest('.modal-close-button') || e.target.closest('#confirm-cancel-button')) {
-                    modal.classList.add('hidden');
+            editButton.addEventListener('click', () => {
+                formPage.classList.remove('hidden');
+                confirmationPage.classList.add('hidden');
+                window.scrollTo(0, 0);
+            });
+            
+            printButton.addEventListener('click', () => {
+                window.print();
+            });
+
+            finalSubmitButton.addEventListener('click', () => {
+                console.log("送信データ:", state);
+                alert("データがコンソールに送信されました。（実際にはここでサーバーに送信します）");
+            });
+
+            descriptionModal.addEventListener('click', (e) => {
+                if (e.target === descriptionModal || e.target.closest('.modal-close-button')) {
+                    descriptionModal.classList.add('hidden');
                 }
             });
 
             function init() {
-                // 初期状態の猫データを生成
                 if (state.cats.length === 0) {
                     for (let i = 0; i < state.catCount; i++) {
                         state.cats.push({ name: '', sex: '', age: '', weight: '', exams: {} });
                     }
                 }
+                updateStateFromDOM();
                 renderCatInfoForms();
                 renderCatTabs();
                 renderExams();
