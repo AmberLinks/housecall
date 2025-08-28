@@ -53,24 +53,43 @@
     <div class="container mx-auto max-w-4xl p-4 sm:p-6 md:p-8">
         <!-- ===== 入力フォームページ ===== -->
         <div id="form-page">
+            <div class="mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i data-lucide="alert-triangle" class="h-5 w-5 text-yellow-400"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-yellow-800">
+                            このフォームは、<strong>事前に往診のお申し込みが完了している方専用</strong>です。
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             <header class="text-center mb-8">
                 <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">往診 事前問診フォーム</h1>
-                <p class="mt-2 text-gray-600">ご来訪前に、猫ちゃんたちの情報をご入力ください。</p>
+                <p class="mt-2 text-gray-600">往診前に必要な猫たちの情報をご入力ください。</p>
             </header>
 
             <main class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg space-y-10">
                 <!-- Step 1: 基本情報 -->
                 <div id="step1">
                     <h2 class="text-2xl font-semibold mb-4 border-l-4 border-blue-500 pl-4">基本情報</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 items-start">
+                    <div class="space-y-4">
                         <div>
-                            <label for="catCount" class="block text-sm font-medium text-gray-700 mb-1">受診する猫の総数</label>
-                            <input type="number" id="catCount" min="1" value="1" readonly class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100">
+                            <label for="applicantName" class="block text-sm font-medium text-gray-700 mb-1">申込者氏名</label>
+                            <input type="text" id="applicantName" class="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="山田 花子">
                         </div>
-                        <div>
-                            <label for="firstVisitCount" class="block text-sm font-medium text-gray-700 mb-1">そのうち初診の猫の数</label>
-                            <input type="number" id="firstVisitCount" min="0" value="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-                            <p class="text-xs text-gray-500 mt-1">（当院の往診が初めてで、カルテ作成が必要な子の数）</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 items-start pt-2">
+                            <div>
+                                <label for="catCount" class="block text-sm font-medium text-gray-700 mb-1">受診する猫の総数</label>
+                                <input type="number" id="catCount" min="1" value="1" readonly class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100">
+                            </div>
+                            <div>
+                                <label for="firstVisitCount" class="block text-sm font-medium text-gray-700 mb-1">そのうち初診の猫の数</label>
+                                <input type="number" id="firstVisitCount" min="0" value="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                                <p class="text-xs text-gray-500 mt-1">（当院の往診が初めてで、カルテ作成が必要な子の数）</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -185,11 +204,12 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // ★★★★★ ここにApps Scriptで取得したウェブアプリのURLを貼り付けます ★★★★★
-            const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyPYgFZ89f5JgrKFxyQ-mdiafukIbxdbNLzC0LzMzp-dPJ4Ma1ow2PWn6Z6H8F0rNrYGw/exec'; 
+            const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbx73KdK9l5dyJugL_BR1FKNp9uch0ih4q9pj1LNomM2PB4DdZvNgSs6rhdkGneXfDTMmw/exec'; 
             // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
 
             // --- 状態管理オブジェクト ---
             let state = {
+                applicantName: '',
                 catCount: 1,
                 firstVisitCount: 0,
                 cats: [], // { name, sex, age, weight, exams: {}, symptoms: '', requests: '' }
@@ -247,6 +267,7 @@
             const formPage = document.getElementById('form-page');
             const confirmationPage = document.getElementById('confirmation-page');
             const successPage = document.getElementById('success-page');
+            const applicantNameInput = document.getElementById('applicantName');
             const catCountInput = document.getElementById('catCount');
             const firstVisitCountInput = document.getElementById('firstVisitCount');
             const catInfoContainer = document.getElementById('cat-info-container');
@@ -431,9 +452,10 @@
                 const basicInfoHTML = `
                     <div>
                         <h3 class="text-xl font-bold mb-3 text-gray-900 border-b pb-2">基本情報</h3>
-                        <div class="grid grid-cols-2 gap-2 text-sm mt-3">
-                            <span class="text-gray-600">受診総数:</span> <span class="font-medium">${state.catCount} 匹</span>
-                            <span class="text-gray-600">うち初診:</span> <span class="font-medium">${state.firstVisitCount} 匹</span>
+                        <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm mt-3">
+                            <span class="text-gray-600 font-semibold">申込者氏名:</span> <span class="font-medium">${state.applicantName || '<span class="text-gray-400">入力なし</span>'}</span>
+                            <span class="text-gray-600 font-semibold">受診総数:</span> <span class="font-medium">${state.catCount} 匹</span>
+                            <span class="text-gray-600 font-semibold">うち初診:</span> <span class="font-medium">${state.firstVisitCount} 匹</span>
                         </div>
                     </div>
                 `;
@@ -506,6 +528,7 @@
                     renderExams();
                 }
                 
+                state.applicantName = applicantNameInput.value;
                 state.firstVisitCount = parseInt(firstVisitCountInput.value) || 0;
 
                 document.querySelectorAll('#cat-info-container > div').forEach((form, index) => {
@@ -524,6 +547,7 @@
             }
             
             // --- イベントハンドラ ---
+            applicantNameInput.addEventListener('input', updateStateFromDOM);
             catCountInput.addEventListener('change', updateStateFromDOM);
             firstVisitCountInput.addEventListener('change', updateStateFromDOM);
             catInfoContainer.addEventListener('input', updateStateFromDOM);
