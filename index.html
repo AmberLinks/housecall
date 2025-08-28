@@ -12,11 +12,10 @@
         .accordion-content {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+            transition: max-height 0.4s ease-in-out;
         }
         .accordion-content.open {
             max-height: 2000px; /* 十分な高さを確保 */
-            transition: max-height 0.5s ease-in, padding 0.5s ease-in;
         }
         /* タブのスタイル */
         .tab-button.active {
@@ -56,7 +55,7 @@
         <div id="form-page">
             <header class="text-center mb-8">
                 <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">往診 事前問診フォーム</h1>
-                <p class="mt-2 text-gray-600">往診に必要な猫ちゃんたちの情報をご入力ください。</p>
+                <p class="mt-2 text-gray-600">ご来訪前に、猫ちゃんたちの情報をご入力ください。</p>
             </header>
 
             <main class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg space-y-10">
@@ -78,7 +77,7 @@
 
                 <!-- Step 2: 猫ごとの情報入力 -->
                 <div id="step2">
-                    <h2 class="text-2xl font-semibold mb-4 border-l-4 border-blue-500 pl-4">猫の情報</h2>
+                    <h2 class="text-2xl font-semibold mb-4 border-l-4 border-blue-500 pl-4">猫ちゃんたちの情報</h2>
                     <div id="cat-info-container" class="space-y-6">
                         <!-- 猫の情報フォームがここに追加されます -->
                     </div>
@@ -99,21 +98,6 @@
                     <h2 class="text-2xl font-semibold mb-4 border-l-4 border-blue-500 pl-4">ご希望の診察・検査内容</h2>
                     <div id="cat-tabs" class="mb-4 border-b border-gray-200"></div>
                     <div id="exam-container" class="space-y-4"></div>
-                </div>
-
-                <!-- Step 4: 症状・ご要望など -->
-                <div id="additional-notes">
-                    <h2 class="text-2xl font-semibold mb-4 border-l-4 border-blue-500 pl-4">症状・ご要望など</h2>
-                    <div class="space-y-6">
-                        <div>
-                            <label for="symptomsNotes" class="block text-sm font-medium text-gray-700 mb-1">現在の症状や気になること</label>
-                            <textarea id="symptomsNotes" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="例：3日前から食欲がなく、時々吐いている。"></textarea>
-                        </div>
-                        <div>
-                            <label for="additionalRequests" class="block text-sm font-medium text-gray-700 mb-1">追加の要望や検査・処置</label>
-                            <textarea id="additionalRequests" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="例：爪切りもお願いしたい。"></textarea>
-                        </div>
-                    </div>
                 </div>
             </main>
 
@@ -208,10 +192,8 @@
             let state = {
                 catCount: 1,
                 firstVisitCount: 0,
-                cats: [], // { name, sex, age, weight, exams: {} }
+                cats: [], // { name, sex, age, weight, exams: {}, symptoms: '', requests: '' }
                 activeCatIndex: 0,
-                symptomsNotes: '',
-                additionalRequests: ''
             };
 
             // --- 検査項目データ ---
@@ -272,8 +254,6 @@
             const removeCatButton = document.getElementById('remove-cat-button');
             const catTabs = document.getElementById('cat-tabs');
             const examContainer = document.getElementById('exam-container');
-            const symptomsNotesInput = document.getElementById('symptomsNotes');
-            const additionalRequestsInput = document.getElementById('additionalRequests');
             const totalPriceEl = document.getElementById('total-price');
             const confirmationSummary = document.getElementById('confirmation-summary');
             const showConfirmButton = document.getElementById('show-confirm-button');
@@ -292,7 +272,7 @@
             function renderCatInfoForms() {
                 catInfoContainer.innerHTML = '';
                 for (let i = 0; i < state.catCount; i++) {
-                    const cat = state.cats[i] || { name: '', sex: '', age: '', weight: '' };
+                    const cat = state.cats[i] || { name: '', sex: '', age: '', weight: '', symptoms: '', requests: '' };
                     const formHTML = `
                         <div class="border border-gray-200 p-4 rounded-lg" data-cat-index="${i}">
                             <p class="font-semibold text-lg mb-3 text-gray-800">${i + 1}匹目の猫ちゃん</p>
@@ -320,6 +300,16 @@
                                         <label class="block text-sm font-medium text-gray-700 mb-1">体重(kg)</label>
                                         <input type="number" data-field="weight" value="${cat.weight}" min="0" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500" placeholder="例：4.5">
                                     </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">現在の症状や気になること</label>
+                                    <textarea data-field="symptoms" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500" placeholder="例：食欲不振、嘔吐など">${cat.symptoms}</textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">追加の要望や検査・処置</label>
+                                    <textarea data-field="requests" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500" placeholder="例：爪切り">${cat.requests}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -411,11 +401,22 @@
                     }
 
                     catSummaryHTML += `
-                        <div class="pb-4">
+                        <div class="pb-4 mb-4 border-b last:border-b-0">
                             <h4 class="font-semibold text-lg text-gray-800">${catName} <span class="text-sm font-normal">(${cat.sex || '性別未選択'}, ${cat.age || '?'}歳, ${cat.weight || '?'} kg)</span></h4>
-                            <ul class="mt-2 pl-4 text-gray-600 space-y-1 text-sm">
-                                ${examListHTML}
-                            </ul>
+                            <div class="mt-2 pl-4 text-gray-700 space-y-3 text-sm">
+                                <div>
+                                    <p class="font-semibold">希望検査:</p>
+                                    <ul class="pl-2 text-gray-600">${examListHTML}</ul>
+                                </div>
+                                <div>
+                                    <p class="font-semibold">症状・気になること:</p>
+                                    <p class="pl-2 whitespace-pre-wrap text-gray-600">${cat.symptoms || '<span class="text-gray-400">入力なし</span>'}</p>
+                                </div>
+                                <div>
+                                    <p class="font-semibold">追加の要望:</p>
+                                    <p class="pl-2 whitespace-pre-wrap text-gray-600">${cat.requests || '<span class="text-gray-400">入力なし</span>'}</p>
+                                </div>
+                            </div>
                             <p class="text-right font-semibold mt-2 text-gray-700">小計: ${catTotalPrice.toLocaleString()} 円</p>
                         </div>
                     `;
@@ -438,23 +439,8 @@
                 `;
                 const examsInfoHTML = `
                     <div>
-                        <h3 class="text-xl font-bold mb-3 text-gray-900 border-b pb-2">検査内容</h3>
+                        <h3 class="text-xl font-bold mb-3 text-gray-900 border-b pb-2">猫ごとの詳細</h3>
                         <div class="space-y-4 mt-3">${catSummaryHTML}</div>
-                    </div>
-                `;
-                const notesHTML = `
-                    <div>
-                        <h3 class="text-xl font-bold mb-3 text-gray-900 border-b pb-2">症状・ご要望</h3>
-                        <div class="text-sm space-y-3 mt-3">
-                            <div>
-                                <p class="font-semibold text-gray-700">現在の症状や気になること・相談したいこと:</p>
-                                <p class="mt-1 p-2 bg-gray-100 rounded text-gray-800 whitespace-pre-wrap min-h-[40px]">${state.symptomsNotes || '<span class="text-gray-500">入力なし</span>'}</p>
-                            </div>
-                            <div>
-                                <p class="font-semibold text-gray-700">追加の要望や検査・処置:</p>
-                                <p class="mt-1 p-2 bg-gray-100 rounded text-gray-800 whitespace-pre-wrap min-h-[40px]">${state.additionalRequests || '<span class="text-gray-500">入力なし</span>'}</p>
-                            </div>
-                        </div>
                     </div>
                 `;
                  const pricingHTML = `
@@ -473,7 +459,6 @@
 
                 confirmationSummary.insertAdjacentHTML('beforeend', basicInfoHTML);
                 confirmationSummary.insertAdjacentHTML('beforeend', examsInfoHTML);
-                confirmationSummary.insertAdjacentHTML('beforeend', notesHTML);
                 confirmationSummary.insertAdjacentHTML('beforeend', pricingHTML);
                 lucide.createIcons();
             }
@@ -510,7 +495,7 @@
                 if (newCatCount !== state.catCount) {
                     state.catCount = newCatCount;
                     while (state.cats.length < state.catCount) {
-                        state.cats.push({ name: '', sex: '', age: '', weight: '', exams: {} });
+                        state.cats.push({ name: '', sex: '', age: '', weight: '', exams: {}, symptoms: '', requests: '' });
                     }
                     state.cats.length = state.catCount;
                     if (state.activeCatIndex >= state.catCount) {
@@ -529,12 +514,11 @@
                         state.cats[index].sex = form.querySelector('[data-field="sex"]').value;
                         state.cats[index].age = form.querySelector('[data-field="age"]').value;
                         state.cats[index].weight = form.querySelector('[data-field="weight"]').value;
+                        state.cats[index].symptoms = form.querySelector('[data-field="symptoms"]').value;
+                        state.cats[index].requests = form.querySelector('[data-field="requests"]').value;
                     }
                 });
                 
-                state.symptomsNotes = symptomsNotesInput.value;
-                state.additionalRequests = additionalRequestsInput.value;
-
                 renderCatTabs();
                 calculateTotal();
             }
@@ -543,8 +527,6 @@
             catCountInput.addEventListener('change', updateStateFromDOM);
             firstVisitCountInput.addEventListener('change', updateStateFromDOM);
             catInfoContainer.addEventListener('input', updateStateFromDOM);
-            symptomsNotesInput.addEventListener('input', updateStateFromDOM);
-            additionalRequestsInput.addEventListener('input', updateStateFromDOM);
             
             addCatButton.addEventListener('click', () => {
                 const currentCount = parseInt(catCountInput.value);
@@ -577,15 +559,27 @@
                     
                     catExams[key] = isChecked;
 
-                    if (key === 'biochem' && !isChecked) {
-                        Object.keys(examData['血液検査'].items).forEach(itemKey => {
-                            if (examData['血液検査'].items[itemKey].isOption) {
-                                catExams[itemKey] = false;
+                    if (key === 'biochem') {
+                        if (!isChecked) {
+                            Object.keys(examData['血液検査'].items).forEach(itemKey => {
+                                if (examData['血液検査'].items[itemKey].isOption) {
+                                    catExams[itemKey] = false;
+                                }
+                            });
+                        }
+                        // 選択状態を更新するためだけに再描画
+                        const openAccordions = new Set();
+                        document.querySelectorAll('.accordion-content.open').forEach(el => {
+                            openAccordions.add(el.previousElementSibling.textContent.trim());
+                        });
+                        renderExams();
+                        document.querySelectorAll('.accordion-header').forEach(header => {
+                            if (openAccordions.has(header.textContent.trim())) {
+                                header.click();
                             }
                         });
                     }
                     
-                    renderExams();
                     calculateTotal();
                 }
             });
@@ -613,13 +607,6 @@
                     if (content && icon) {
                         content.classList.toggle('open');
                         icon.classList.toggle('rotate-180');
-                        if(content.classList.contains('open')) {
-                            content.style.paddingTop = '1rem';
-                            content.style.paddingBottom = '1rem';
-                        } else {
-                            content.style.paddingTop = '0';
-                            content.style.paddingBottom = '0';
-                        }
                     }
                 }
                 const descButton = e.target.closest('.show-description-button');
@@ -691,7 +678,7 @@
             function init() {
                 if (state.cats.length === 0) {
                     for (let i = 0; i < state.catCount; i++) {
-                        state.cats.push({ name: '', sex: '', age: '', weight: '', exams: {} });
+                        state.cats.push({ name: '', sex: '', age: '', weight: '', exams: {}, symptoms: '', requests: '' });
                     }
                 }
                 updateStateFromDOM();
