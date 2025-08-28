@@ -56,7 +56,7 @@
         <div id="form-page">
             <header class="text-center mb-8">
                 <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">往診 事前問診フォーム</h1>
-                <p class="mt-2 text-gray-600">ご来訪前に、猫ちゃんたちの情報をご入力ください。</p>
+                <p class="mt-2 text-gray-600">往診に必要な猫ちゃんたちの情報をご入力ください。</p>
             </header>
 
             <main class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg space-y-10">
@@ -78,7 +78,7 @@
 
                 <!-- Step 2: 猫ごとの情報入力 -->
                 <div id="step2">
-                    <h2 class="text-2xl font-semibold mb-4 border-l-4 border-blue-500 pl-4">猫ちゃんたちの情報</h2>
+                    <h2 class="text-2xl font-semibold mb-4 border-l-4 border-blue-500 pl-4">猫の情報</h2>
                     <div id="cat-info-container" class="space-y-6">
                         <!-- 猫の情報フォームがここに追加されます -->
                     </div>
@@ -164,10 +164,23 @@
                         印刷する
                     </button>
                     <button id="final-submit-button" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition flex items-center justify-center">
-                        <i data-lucide="send" class="w-4 h-4 mr-2"></i>
-                        この内容で送信する
+                        <span id="final-submit-text">この内容で送信する</span>
+                        <div id="final-submit-loader" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin hidden"></div>
+                        <i data-lucide="send" class="w-4 h-4 ml-2"></i>
                     </button>
                 </div>
+            </main>
+        </div>
+        
+        <!-- ===== 送信完了ページ ===== -->
+        <div id="success-page" class="hidden">
+            <main class="bg-white p-8 sm:p-12 rounded-2xl shadow-lg text-center">
+                <i data-lucide="check-circle-2" class="w-16 h-16 text-green-500 mx-auto"></i>
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mt-6">送信が完了しました</h1>
+                <p class="mt-4 text-gray-600 max-w-md mx-auto">ご入力ありがとうございました。内容を確認の上、担当者よりご連絡いたします。</p>
+                <button id="return-to-form-button" class="mt-8 bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition">
+                    最初の画面に戻る
+                </button>
             </main>
         </div>
     </div>
@@ -187,6 +200,10 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // ★★★★★ ここにApps Scriptで取得したウェブアプリのURLを貼り付けます ★★★★★
+            const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyPYgFZ89f5JgrKFxyQ-mdiafukIbxdbNLzC0LzMzp-dPJ4Ma1ow2PWn6Z6H8F0rNrYGw/exec'; 
+            // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+
             // --- 状態管理オブジェクト ---
             let state = {
                 catCount: 1,
@@ -247,6 +264,7 @@
             // --- DOM要素の取得 ---
             const formPage = document.getElementById('form-page');
             const confirmationPage = document.getElementById('confirmation-page');
+            const successPage = document.getElementById('success-page');
             const catCountInput = document.getElementById('catCount');
             const firstVisitCountInput = document.getElementById('firstVisitCount');
             const catInfoContainer = document.getElementById('cat-info-container');
@@ -262,6 +280,9 @@
             const editButton = document.getElementById('edit-button');
             const printButton = document.getElementById('print-button');
             const finalSubmitButton = document.getElementById('final-submit-button');
+            const finalSubmitText = document.getElementById('final-submit-text');
+            const finalSubmitLoader = document.getElementById('final-submit-loader');
+            const returnToFormButton = document.getElementById('return-to-form-button');
             const descriptionModal = document.getElementById('description-modal');
             const modalTitle = document.getElementById('modal-title');
             const modalContent = document.getElementById('modal-content');
@@ -426,7 +447,7 @@
                         <h3 class="text-xl font-bold mb-3 text-gray-900 border-b pb-2">症状・ご要望</h3>
                         <div class="text-sm space-y-3 mt-3">
                             <div>
-                                <p class="font-semibold text-gray-700">現在の症状や気になること:</p>
+                                <p class="font-semibold text-gray-700">現在の症状や気になること・相談したいこと:</p>
                                 <p class="mt-1 p-2 bg-gray-100 rounded text-gray-800 whitespace-pre-wrap min-h-[40px]">${state.symptomsNotes || '<span class="text-gray-500">入力なし</span>'}</p>
                             </div>
                             <div>
@@ -454,6 +475,7 @@
                 confirmationSummary.insertAdjacentHTML('beforeend', examsInfoHTML);
                 confirmationSummary.insertAdjacentHTML('beforeend', notesHTML);
                 confirmationSummary.insertAdjacentHTML('beforeend', pricingHTML);
+                lucide.createIcons();
             }
 
             function calculateTotal() {
@@ -625,8 +647,39 @@
             });
 
             finalSubmitButton.addEventListener('click', () => {
-                console.log("送信データ:", state);
-                alert("データがコンソールに送信されました。（実際にはここでサーバーに送信します）");
+                if (!GAS_WEB_APP_URL) {
+                    alert('送信先URLが設定されていません。');
+                    return;
+                }
+                
+                finalSubmitButton.disabled = true;
+                finalSubmitText.classList.add('hidden');
+                finalSubmitLoader.classList.remove('hidden');
+
+                fetch(GAS_WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(state),
+                })
+                .then(() => {
+                    confirmationPage.classList.add('hidden');
+                    successPage.classList.remove('hidden');
+                    window.scrollTo(0, 0);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('送信に失敗しました。ネットワーク接続を確認の上、もう一度お試しください。');
+                })
+                .finally(() => {
+                    finalSubmitButton.disabled = false;
+                    finalSubmitText.classList.remove('hidden');
+                    finalSubmitLoader.classList.add('hidden');
+                });
+            });
+
+            returnToFormButton.addEventListener('click', () => {
+                window.location.reload();
             });
 
             descriptionModal.addEventListener('click', (e) => {
