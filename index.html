@@ -68,7 +68,7 @@
 
             <header class="text-center mb-8">
                 <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">往診 事前問診フォーム</h1>
-                <p class="mt-2 text-gray-600">往診前に必要な猫たちの情報をご入力ください。</p>
+                <p class="mt-2 text-gray-600">往診前に必要な猫の情報をご入力ください。</p>
             </header>
 
             <main class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg space-y-10">
@@ -96,7 +96,7 @@
 
                 <!-- Step 2: 猫ごとの情報入力 -->
                 <div id="step2">
-                    <h2 class="text-2xl font-semibold mb-4 border-l-4 border-blue-500 pl-4">猫ちゃんたちの情報</h2>
+                    <h2 class="text-2xl font-semibold mb-4 border-l-4 border-blue-500 pl-4">猫の情報</h2>
                     <div id="cat-info-container" class="space-y-6">
                         <!-- 猫の情報フォームがここに追加されます -->
                     </div>
@@ -204,7 +204,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // ★★★★★ ここにApps Scriptで取得したウェブアプリのURLを貼り付けます ★★★★★
-            const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbx73KdK9l5dyJugL_BR1FKNp9uch0ih4q9pj1LNomM2PB4DdZvNgSs6rhdkGneXfDTMmw/exec'; 
+            const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyPYgFZ89f5JgrKFxyQ-mdiafukIbxdbNLzC0LzMzp-dPJ4Ma1ow2PWn6Z6H8F0rNrYGw/exec'; 
             // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
 
             // --- 状態管理オブジェクト ---
@@ -212,7 +212,7 @@
                 applicantName: '',
                 catCount: 1,
                 firstVisitCount: 0,
-                cats: [], // { name, sex, age, weight, exams: {}, symptoms: '', requests: '' }
+                cats: [], // { name, sex, birthdate, age, weight, medicineCount, exams: {}, symptoms: '', requests: '' }
                 activeCatIndex: 0,
             };
 
@@ -229,7 +229,7 @@
                 '血液検査': {
                     type: 'checkbox',
                     items: {
-                        'biochem': { name: '生化学19項目 + 血球計算', price: 9000, description: '血液中の様々な成分を測定し、肝臓、腎臓、膵臓などの内臓の健康状態や、貧血、炎症の有無などを総合的に評価します。健康診断の基本となる検査です。<br><strong>＜項目＞</strong><br><small>TP, Alb, A/G比, T-Bil, AST, ALT, ALP, γ-GTP, Lipa, BUN, Cre, T-Cho, TG, Ca, IP, Glu, Na, K, Cl</small>' },
+                        'biochem': { name: '生化学19項目 + 血球計算', price: 6000, description: '血液中の様々な成分を測定し、肝臓、腎臓、膵臓などの内臓の健康状態や、貧血、炎症の有無などを総合的に評価します。健康診断の基本となる検査です。<br><strong>＜項目＞</strong><br><small>TP, Alb, A/G比, T-Bil, AST, ALT, ALP, γ-GTP, Lipa, BUN, Cre, T-Cho, TG, Ca, IP, Glu, Na, K, Cl</small>' },
                         't4': { name: '【オプション】T4', price: 3000, description: '甲状腺ホルモンの値を測定します。特に高齢の猫で多く見られる「甲状腺機能亢進症」の診断に役立ちます。飲水量が多い、食欲旺盛なのに痩せてきた、などの症状がある場合におすすめです。', isOption: true },
                         'ga': { name: '【オプション】グリコアルブミン (GA)', price: 3000, description: '過去2〜3週間の平均血糖値を反映する指標です。糖尿病の診断や、治療中のコントロール状態の評価に用いられます。', isOption: true },
                         'saa': { name: '【オプション】炎症マーカーSAA', price: 2000, description: '猫の体内で炎症が起きると急激に増加するタンパク質です。隠れた炎症性疾患や感染症の早期発見、治療効果の判定に役立ちます。', isOption: true }
@@ -293,12 +293,12 @@
             function renderCatInfoForms() {
                 catInfoContainer.innerHTML = '';
                 for (let i = 0; i < state.catCount; i++) {
-                    const cat = state.cats[i] || { name: '', sex: '', age: '', weight: '', symptoms: '', requests: '' };
+                    const cat = state.cats[i] || { name: '', sex: '', birthdate: '', age: '', weight: '', symptoms: '', requests: '' };
                     const formHTML = `
                         <div class="border border-gray-200 p-4 rounded-lg" data-cat-index="${i}">
                             <p class="font-semibold text-lg mb-3 text-gray-800">${i + 1}匹目の猫ちゃん</p>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                                <div class="lg:col-span-2">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">名前</label>
                                     <input type="text" data-field="name" value="${cat.name}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500" placeholder="例：タマ">
                                 </div>
@@ -311,6 +311,10 @@
                                         <option value="メス(未避妊)" ${cat.sex === 'メス(未避妊)' ? 'selected' : ''}>メス (未避妊)</option>
                                         <option value="メス(避妊済)" ${cat.sex === 'メス(避妊済)' ? 'selected' : ''}>メス (避妊済)</option>
                                     </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">生年月日 (任意)</label>
+                                    <input type="date" data-field="birthdate" value="${cat.birthdate}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500">
                                 </div>
                                 <div class="grid grid-cols-2 gap-2">
                                     <div>
@@ -355,9 +359,45 @@
 
             function renderExams() {
                 examContainer.innerHTML = '';
-                const activeCatExams = state.cats[state.activeCatIndex]?.exams || {};
+                const activeCat = state.cats[state.activeCatIndex];
+                if (!activeCat) return;
+                const activeCatExams = activeCat.exams || {};
 
                 Object.entries(examData).forEach(([category, data]) => {
+                    const isMedicineCategory = category === '予防薬';
+                    const accordionItemsHTML = Object.entries(data.items).map(([key, item]) => {
+                        const isOption = item.isOption;
+                        const isBiochemChecked = activeCatExams['biochem'];
+                        const isDisabled = isOption && !isBiochemChecked;
+                        const labelClasses = isDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 cursor-pointer';
+                        const isChecked = activeCatExams[key];
+
+                        const medicineInputHTML = isMedicineCategory ? `
+                            <div class="medicine-count-container ml-4 ${isChecked ? '' : 'hidden'}">
+                                <label class="block text-xs font-medium text-gray-600 mb-1">個数</label>
+                                <input type="number" data-field="medicineCount" value="${activeCat.medicineCount || 1}" min="1" class="w-20 px-2 py-1 border border-gray-300 rounded-md text-sm">
+                            </div>
+                        ` : '';
+
+                        return `
+                            <div class="p-3 rounded-md transition ${isDisabled ? 'opacity-50' : 'hover:bg-gray-50'}">
+                                <div class="flex items-center">
+                                    <label class="flex items-start cursor-pointer flex-grow">
+                                        <input type="${data.type}" name="${category}-${state.activeCatIndex}" value="${key}" data-price="${item.price}" class="custom-checkbox mt-1 h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" ${isChecked ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
+                                        <div class="ml-3 text-sm flex-grow">
+                                            <span class="font-medium text-gray-900">${item.name}</span>
+                                            <p class="text-gray-500">${item.price.toLocaleString()} 円</p>
+                                        </div>
+                                    </label>
+                                    ${medicineInputHTML}
+                                    <button class="show-description-button text-blue-500 hover:text-blue-700 p-1 ml-2 flex-shrink-0" data-title="${item.name}" data-description="${item.description}">
+                                        <i data-lucide="info" class="w-5 h-5"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
                     const accordionHTML = `
                         <div class="border border-gray-200 rounded-lg">
                             <button class="accordion-header w-full flex justify-between items-center p-4 text-left font-semibold text-lg">
@@ -365,25 +405,8 @@
                                 <i data-lucide="chevron-down" class="transition-transform duration-300"></i>
                             </button>
                             <div class="accordion-content px-4">
-                                <div class="py-4 border-t border-gray-200 space-y-4">
-                                    ${Object.entries(data.items).map(([key, item]) => {
-                                        const isOption = item.isOption;
-                                        const isBiochemChecked = activeCatExams['biochem'];
-                                        const isDisabled = isOption && !isBiochemChecked;
-                                        const labelClasses = isDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 cursor-pointer';
-
-                                        return `
-                                        <label class="flex items-start p-3 rounded-md transition ${labelClasses}">
-                                            <input type="${data.type}" name="${category}-${state.activeCatIndex}" value="${key}" data-price="${item.price}" class="custom-checkbox mt-1 h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" ${activeCatExams[key] ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
-                                            <div class="ml-3 text-sm flex-grow">
-                                                <span class="font-medium text-gray-900">${item.name}</span>
-                                                <p class="text-gray-500">${item.price.toLocaleString()} 円</p>
-                                            </div>
-                                            <button class="show-description-button text-blue-500 hover:text-blue-700 p-1" data-title="${item.name}" data-description="${item.description}">
-                                                <i data-lucide="info" class="w-5 h-5"></i>
-                                            </button>
-                                        </label>
-                                    `}).join('')}
+                                <div class="py-4 border-t border-gray-200 space-y-2">
+                                    ${accordionItemsHTML}
                                 </div>
                             </div>
                         </div>
@@ -409,8 +432,16 @@
                         for (const category in examData) {
                             if (examData[category].items[examKey]) {
                                 const item = examData[category].items[examKey];
-                                examListHTML += `<li class="flex justify-between"><span>${item.name}</span><span>${item.price.toLocaleString()} 円</span></li>`;
-                                catTotalPrice += item.price;
+                                let priceText = `${item.price.toLocaleString()} 円`;
+                                let itemPrice = item.price;
+
+                                if (category === '予防薬') {
+                                    const medCount = cat.medicineCount || 1;
+                                    itemPrice = item.price * medCount;
+                                    priceText = `${item.price.toLocaleString()} 円 × ${medCount}個 = ${itemPrice.toLocaleString()} 円`;
+                                }
+                                catTotalPrice += itemPrice;
+                                examListHTML += `<li class="flex justify-between"><span>${item.name}</span><span>${priceText}</span></li>`;
                                 break;
                             }
                         }
@@ -423,8 +454,10 @@
 
                     catSummaryHTML += `
                         <div class="pb-4 mb-4 border-b last:border-b-0">
-                            <h4 class="font-semibold text-lg text-gray-800">${catName} <span class="text-sm font-normal">(${cat.sex || '性別未選択'}, ${cat.age || '?'}歳, ${cat.weight || '?'} kg)</span></h4>
+                            <h4 class="font-semibold text-lg text-gray-800">${catName} <span class="text-sm font-normal">(${cat.sex || '性別未選択'}, ${cat.age || '?'}歳)</span></h4>
                             <div class="mt-2 pl-4 text-gray-700 space-y-3 text-sm">
+                                <div><p><span class="font-semibold">生年月日:</span> ${cat.birthdate || '未入力'}</p></div>
+                                <div><p><span class="font-semibold">体重:</span> ${cat.weight || '?'} kg</p></div>
                                 <div>
                                     <p class="font-semibold">希望検査:</p>
                                     <ul class="pl-2 text-gray-600">${examListHTML}</ul>
@@ -469,7 +502,7 @@
                     <div>
                         <h3 class="text-xl font-bold mb-3 text-gray-900 border-b pb-2">料金概算</h3>
                         <div class="space-y-1 text-sm mt-3">
-                            <div class="flex justify-between"><span class="text-gray-600">検査料金 合計:</span> <span>${subtotalExams.toLocaleString()} 円</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600">検査・薬代 合計:</span> <span>${subtotalExams.toLocaleString()} 円</span></div>
                             <div class="flex justify-between"><span class="text-gray-600">診察料 (${state.catCount}匹):</span> <span>${consultationFee.toLocaleString()} 円</span></div>
                             <div class="flex justify-between"><span class="text-gray-600">往診料:</span> <span>${visitFee.toLocaleString()} 円</span></div>
                             <div class="flex justify-between font-semibold border-t pt-1 mt-1"><span class="text-gray-700">小計 (税抜):</span> <span>${preTaxTotal.toLocaleString()} 円</span></div>
@@ -492,7 +525,12 @@
                         if (isChecked) {
                             for (const category in examData) {
                                 if (examData[category].items[examKey]) {
-                                    subtotalExams += examData[category].items[examKey].price;
+                                    const item = examData[category].items[examKey];
+                                    if (category === '予防薬') {
+                                        subtotalExams += item.price * (cat.medicineCount || 1);
+                                    } else {
+                                        subtotalExams += item.price;
+                                    }
                                     break;
                                 }
                             }
@@ -517,7 +555,7 @@
                 if (newCatCount !== state.catCount) {
                     state.catCount = newCatCount;
                     while (state.cats.length < state.catCount) {
-                        state.cats.push({ name: '', sex: '', age: '', weight: '', exams: {}, symptoms: '', requests: '' });
+                        state.cats.push({ name: '', sex: '', birthdate: '', age: '', weight: '', medicineCount: 1, exams: {}, symptoms: '', requests: '' });
                     }
                     state.cats.length = state.catCount;
                     if (state.activeCatIndex >= state.catCount) {
@@ -535,6 +573,7 @@
                     if (state.cats[index]) {
                         state.cats[index].name = form.querySelector('[data-field="name"]').value;
                         state.cats[index].sex = form.querySelector('[data-field="sex"]').value;
+                        state.cats[index].birthdate = form.querySelector('[data-field="birthdate"]').value;
                         state.cats[index].age = form.querySelector('[data-field="age"]').value;
                         state.cats[index].weight = form.querySelector('[data-field="weight"]').value;
                         state.cats[index].symptoms = form.querySelector('[data-field="symptoms"]').value;
@@ -584,26 +623,32 @@
                     catExams[key] = isChecked;
 
                     if (key === 'biochem') {
-                        if (!isChecked) {
-                            Object.keys(examData['血液検査'].items).forEach(itemKey => {
-                                if (examData['血液検査'].items[itemKey].isOption) {
-                                    catExams[itemKey] = false;
-                                }
-                            });
-                        }
-                        // 選択状態を更新するためだけに再描画
-                        const openAccordions = new Set();
-                        document.querySelectorAll('.accordion-content.open').forEach(el => {
-                            openAccordions.add(el.previousElementSibling.textContent.trim());
-                        });
-                        renderExams();
-                        document.querySelectorAll('.accordion-header').forEach(header => {
-                            if (openAccordions.has(header.textContent.trim())) {
-                                header.click();
+                        const parent = e.target.closest('.accordion-content');
+                        parent.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                            if (examData['血液検査'].items[cb.value]?.isOption) {
+                                cb.disabled = !isChecked;
+                                if (!isChecked) cb.checked = false;
+                                cb.closest('label').classList.toggle('opacity-50', !isChecked);
+                                cb.closest('label').classList.toggle('cursor-not-allowed', !isChecked);
                             }
                         });
                     }
                     
+                    if (e.target.type === 'radio') {
+                         const parent = e.target.closest('.accordion-content');
+                         parent.querySelectorAll('.medicine-count-container').forEach(el => el.classList.add('hidden'));
+                         if(isChecked) {
+                             e.target.closest('.flex.items-center').querySelector('.medicine-count-container')?.classList.remove('hidden');
+                         }
+                    }
+
+                    calculateTotal();
+                }
+            });
+            
+            examContainer.addEventListener('input', (e) => {
+                if (e.target.matches('[data-field="medicineCount"]')) {
+                    state.cats[state.activeCatIndex].medicineCount = parseInt(e.target.value) || 1;
                     calculateTotal();
                 }
             });
@@ -702,7 +747,7 @@
             function init() {
                 if (state.cats.length === 0) {
                     for (let i = 0; i < state.catCount; i++) {
-                        state.cats.push({ name: '', sex: '', age: '', weight: '', exams: {}, symptoms: '', requests: '' });
+                        state.cats.push({ name: '', sex: '', birthdate: '', age: '', weight: '', medicineCount: 1, exams: {}, symptoms: '', requests: '' });
                     }
                 }
                 updateStateFromDOM();
