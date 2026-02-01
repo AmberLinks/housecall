@@ -76,19 +76,94 @@
                 <div id="step1">
                     <h2 class="text-2xl font-semibold mb-4 border-l-4 border-blue-500 pl-4">基本情報</h2>
                     <div class="space-y-4">
+                        <!-- 依頼者タイプ選択 -->
                         <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">依頼者タイプ</label>
+                            <div class="flex flex-wrap gap-3">
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="radio" name="applicantType" value="individual" checked class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                    <span class="ml-2 text-sm">個人</span>
+                                </label>
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="radio" name="applicantType" value="organization" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                    <span class="ml-2 text-sm">保護団体</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 個人用入力欄 -->
+                        <div id="individualSection">
                             <label for="applicantName" class="block text-sm font-medium text-gray-700 mb-1">申込者氏名</label>
                             <input type="text" id="applicantName" class="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="山田 花子">
                         </div>
+
+                        <!-- 保護団体用入力欄 -->
+                        <div id="organizationSection" class="hidden space-y-3">
+                            <div>
+                                <label for="organizationSelect" class="block text-sm font-medium text-gray-700 mb-1">保護団体名</label>
+                                <select id="organizationSelect" class="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                                    <option value="">選択してください</option>
+                                    <option value="nyanhot_otori">にゃんほっと大鳥居店</option>
+                                </select>
+                                <p class="text-xs text-gray-500 mt-1">
+                                    <a href="https://connectpet.jp/carestore" target="_blank" class="text-blue-600 hover:underline">にゃんほっと大鳥居店の詳細 →</a>
+                                </p>
+                            </div>
+                            <div>
+                                <label for="staffName" class="block text-sm font-medium text-gray-700 mb-1">担当者名</label>
+                                <input type="text" id="staffName" class="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="担当者のお名前">
+                            </div>
+                            <div class="bg-green-50 border border-green-200 p-3 rounded-lg">
+                                <p class="text-sm text-green-800">
+                                    <i data-lucide="badge-percent" class="inline w-4 h-4 mr-1"></i>
+                                    保護団体割引: 最終金額から <strong>30%OFF</strong> が適用されます
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- 診療希望日セクション -->
+                        <div class="pt-4 border-t border-gray-200">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">診療希望日 <span class="text-xs text-gray-500">(1週間以上先の土・日・月 13:30〜)</span></label>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label for="preferredDate1" class="block text-xs text-gray-600 mb-1">第1希望</label>
+                                    <select id="preferredDate1" class="preferred-date-select w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                                        <option value="">選択してください</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="preferredDate2" class="block text-xs text-gray-600 mb-1">第2希望</label>
+                                    <select id="preferredDate2" class="preferred-date-select w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                                        <option value="">選択してください</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="preferredDate3" class="block text-xs text-gray-600 mb-1">第3希望</label>
+                                    <select id="preferredDate3" class="preferred-date-select w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                                        <option value="">選択してください</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 5匹以上の注意書き -->
+                        <div id="scheduleWarning" class="hidden bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i data-lucide="alert-circle" class="h-5 w-5 text-amber-400"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-amber-800">
+                                        受診予定の猫が<strong>5匹以上</strong>の場合は、人員確保や資材調整の都合上、<strong>別途スケジュール調整</strong>が必要となります。上記の希望日は参考情報として受け付けますが、改めて日程調整のご連絡をさせていただきます。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 items-start pt-2">
                             <div>
                                 <label for="catCount" class="block text-sm font-medium text-gray-700 mb-1">受診する猫の総数</label>
                                 <input type="number" id="catCount" min="1" value="1" readonly class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100">
-                            </div>
-                            <div>
-                                <label for="firstVisitCount" class="block text-sm font-medium text-gray-700 mb-1">そのうち初診の猫の数</label>
-                                <input type="number" id="firstVisitCount" min="0" value="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-                                <p class="text-xs text-gray-500 mt-1">（当院の往診が初めてで、カルテ作成が必要な子の数）</p>
                             </div>
                         </div>
                     </div>
@@ -123,7 +198,7 @@
             <footer class="sticky bottom-0 mt-8 bg-white/80 backdrop-blur-sm border-t border-gray-200 p-4 rounded-t-2xl shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.05)]">
                 <div class="max-w-4xl mx-auto flex justify-between items-center">
                     <div>
-                        <p class="text-sm text-gray-600">概算合計金額 (税込)</p>
+                        <p class="text-sm text-gray-600">概算合計金額 (税込) <span class="text-xs text-amber-600">※見積書ではありません</span></p>
                         <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="total-price">0 円</p>
                     </div>
                     <button id="show-confirm-button" class="bg-blue-600 text-white font-bold py-3 px-6 sm:px-8 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all transform hover:scale-105">
@@ -209,11 +284,20 @@
 
             // --- 状態管理オブジェクト ---
             let state = {
+                applicantType: 'individual', // 'individual' or 'organization'
                 applicantName: '',
+                organizationId: '',
+                organizationName: '',
+                staffName: '',
+                preferredDates: ['', '', ''], // 第1〜第3希望日
                 catCount: 1,
-                firstVisitCount: 0,
-                cats: [], // { name, sex, birthdate, age, weight, medicineCount, exams: {}, symptoms: '', requests: '' }
+                cats: [], // { name, sex, birthdate, age, weight, medicineCount, exams: {}, symptoms: '', requests: '', isFirstVisit: true }
                 activeCatIndex: 0,
+            };
+
+            // --- 保護団体データ ---
+            const organizations = {
+                'nyanhot_otori': { name: 'にゃんほっと大鳥居店', discount: 0.30 }
             };
 
             // --- 検査項目データ ---
@@ -269,7 +353,6 @@
             const successPage = document.getElementById('success-page');
             const applicantNameInput = document.getElementById('applicantName');
             const catCountInput = document.getElementById('catCount');
-            const firstVisitCountInput = document.getElementById('firstVisitCount');
             const catInfoContainer = document.getElementById('cat-info-container');
             const addCatButton = document.getElementById('add-cat-button');
             const removeCatButton = document.getElementById('remove-cat-button');
@@ -287,16 +370,87 @@
             const descriptionModal = document.getElementById('description-modal');
             const modalTitle = document.getElementById('modal-title');
             const modalContent = document.getElementById('modal-content');
+            const individualSection = document.getElementById('individualSection');
+            const organizationSection = document.getElementById('organizationSection');
+            const organizationSelect = document.getElementById('organizationSelect');
+            const staffNameInput = document.getElementById('staffName');
+            const scheduleWarning = document.getElementById('scheduleWarning');
+
+            // --- 診療希望日の候補日を生成する関数 ---
+            function generateAvailableDates() {
+                const dates = [];
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                // 1週間後から8週間先までの土・日・月を取得
+                const startDate = new Date(today);
+                startDate.setDate(startDate.getDate() + 7); // 1週間以上先
+
+                const endDate = new Date(today);
+                endDate.setDate(endDate.getDate() + 56); // 8週間先まで
+
+                const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
+
+                for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+                    const dayOfWeek = d.getDay();
+                    // 0: 日曜, 1: 月曜, 6: 土曜
+                    if (dayOfWeek === 0 || dayOfWeek === 1 || dayOfWeek === 6) {
+                        const dateStr = d.toISOString().split('T')[0];
+                        const month = d.getMonth() + 1;
+                        const day = d.getDate();
+                        const label = `${month}/${day}（${dayNames[dayOfWeek]}）13:30〜`;
+                        dates.push({ value: dateStr, label: label });
+                    }
+                }
+                return dates;
+            }
+
+            function populateDateSelects() {
+                const dates = generateAvailableDates();
+                const selects = document.querySelectorAll('.preferred-date-select');
+
+                selects.forEach(select => {
+                    const currentValue = select.value;
+                    select.innerHTML = '<option value="">選択してください</option>';
+                    dates.forEach(date => {
+                        const option = document.createElement('option');
+                        option.value = date.value;
+                        option.textContent = date.label;
+                        if (currentValue === date.value) {
+                            option.selected = true;
+                        }
+                        select.appendChild(option);
+                    });
+                });
+            }
 
             // --- レンダリング関数 ---
 
             function renderCatInfoForms() {
                 catInfoContainer.innerHTML = '';
                 for (let i = 0; i < state.catCount; i++) {
-                    const cat = state.cats[i] || { name: '', sex: '', birthdate: '', age: '', weight: '', symptoms: '', requests: '' };
+                    const cat = state.cats[i] || { name: '', sex: '', birthdate: '', age: '', weight: '', symptoms: '', requests: '', isFirstVisit: true };
                     const formHTML = `
                         <div class="border border-gray-200 p-4 rounded-lg" data-cat-index="${i}">
-                            <p class="font-semibold text-lg mb-3 text-gray-800">${i + 1}匹目の猫ちゃん</p>
+                            <div class="flex justify-between items-center mb-3">
+                                <p class="font-semibold text-lg text-gray-800">${i + 1}匹目の猫ちゃん</p>
+                                <div class="flex gap-3">
+                                    <label class="flex items-center cursor-pointer px-3 py-1 rounded-full border ${cat.isFirstVisit ? 'bg-blue-100 border-blue-400 text-blue-700' : 'bg-gray-50 border-gray-300 text-gray-600'}">
+                                        <input type="radio" name="visitType-${i}" value="first" data-field="isFirstVisit" ${cat.isFirstVisit ? 'checked' : ''} class="w-3 h-3 mr-1">
+                                        <span class="text-sm font-medium">初診</span>
+                                    </label>
+                                    <label class="flex items-center cursor-pointer px-3 py-1 rounded-full border ${!cat.isFirstVisit ? 'bg-green-100 border-green-400 text-green-700' : 'bg-gray-50 border-gray-300 text-gray-600'}">
+                                        <input type="radio" name="visitType-${i}" value="return" data-field="isFirstVisit" ${!cat.isFirstVisit ? 'checked' : ''} class="w-3 h-3 mr-1">
+                                        <span class="text-sm font-medium">再診</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div id="returnVisitNote-${i}" class="${!cat.isFirstVisit ? '' : 'hidden'} mb-3 bg-green-50 border border-green-200 p-2 rounded-md">
+                                <p class="text-xs text-green-700">
+                                    <i data-lucide="info" class="inline w-3 h-3 mr-1"></i>
+                                    再診の猫で<strong>寄生虫の予防薬のみ</strong>をご希望の場合は、診察料は不要です。
+                                </p>
+                            </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">名前</label>
@@ -341,6 +495,7 @@
                     `;
                     catInfoContainer.insertAdjacentHTML('beforeend', formHTML);
                 }
+                lucide.createIcons();
             }
 
             function renderCatTabs() {
@@ -420,15 +575,22 @@
                 confirmationSummary.innerHTML = '';
                 let catSummaryHTML = '';
                 let subtotalExams = 0;
+                let consultationFeeCount = 0;
 
                 state.cats.forEach(cat => {
                     const catName = cat.name || '(名前未入力)';
                     let examListHTML = '';
                     let catTotalPrice = 0;
 
+                    // 再診で予防薬のみの場合は診察料不要
+                    const needsConsultationFee = cat.isFirstVisit || !isOnlyPreventiveMedicine(cat);
+                    if (needsConsultationFee) {
+                        consultationFeeCount++;
+                    }
+
                     Object.entries(cat.exams).forEach(([examKey, isChecked]) => {
                         if (!isChecked) return;
-                        
+
                         for (const category in examData) {
                             if (examData[category].items[examKey]) {
                                 const item = examData[category].items[examKey];
@@ -448,13 +610,21 @@
                     });
                     subtotalExams += catTotalPrice;
 
-                    if(examListHTML === '') {
+                    if (examListHTML === '') {
                         examListHTML = '<li>検査項目の選択がありません</li>';
                     }
 
+                    const visitTypeLabel = cat.isFirstVisit
+                        ? '<span class="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">初診</span>'
+                        : '<span class="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full">再診</span>';
+
+                    const consultationNote = !needsConsultationFee
+                        ? '<span class="text-xs text-green-600 ml-2">(予防薬のみのため診察料不要)</span>'
+                        : '';
+
                     catSummaryHTML += `
                         <div class="pb-4 mb-4 border-b last:border-b-0">
-                            <h4 class="font-semibold text-lg text-gray-800">${catName} <span class="text-sm font-normal">(${cat.sex || '性別未選択'}, ${cat.age || '?'}歳)</span></h4>
+                            <h4 class="font-semibold text-lg text-gray-800">${catName} ${visitTypeLabel} <span class="text-sm font-normal">(${cat.sex || '性別未選択'}, ${cat.age || '?'}歳)</span>${consultationNote}</h4>
                             <div class="mt-2 pl-4 text-gray-700 space-y-3 text-sm">
                                 <div><p><span class="font-semibold">生年月日:</span> ${cat.birthdate || '未入力'}</p></div>
                                 <div><p><span class="font-semibold">体重:</span> ${cat.weight || '?'} kg</p></div>
@@ -475,20 +645,67 @@
                         </div>
                     `;
                 });
-                
+
                 const visitFee = 5000;
-                const consultationFee = state.catCount * 2000;
+                const consultationFee = consultationFeeCount * 2000;
                 const preTaxTotal = visitFee + consultationFee + subtotalExams;
                 const tax = Math.floor(preTaxTotal * 0.1);
-                const finalTotal = preTaxTotal + tax;
+                let finalTotal = preTaxTotal + tax;
+
+                // 保護団体の場合は30%割引
+                let discountAmount = 0;
+                let discountHTML = '';
+                if (state.applicantType === 'organization' && state.organizationId) {
+                    const org = organizations[state.organizationId];
+                    if (org && org.discount) {
+                        discountAmount = Math.floor(finalTotal * org.discount);
+                        finalTotal = finalTotal - discountAmount;
+                        discountHTML = `<div class="flex justify-between text-green-600"><span>保護団体割引 (30%OFF):</span> <span>-${discountAmount.toLocaleString()} 円</span></div>`;
+                    }
+                }
+
+                // 初診の猫の数をカウント
+                const firstVisitCatCount = state.cats.filter(cat => cat.isFirstVisit).length;
+
+                // 診療希望日のフォーマット
+                const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
+                const formatDate = (dateStr) => {
+                    if (!dateStr) return '未選択';
+                    const d = new Date(dateStr);
+                    const month = d.getMonth() + 1;
+                    const day = d.getDate();
+                    const dow = dayNames[d.getDay()];
+                    return `${month}/${day}（${dow}）13:30〜`;
+                };
+
+                // 依頼者情報
+                let applicantInfoHTML = '';
+                if (state.applicantType === 'individual') {
+                    applicantInfoHTML = `
+                        <span class="text-gray-600 font-semibold">申込者氏名:</span> <span class="font-medium">${state.applicantName || '<span class="text-gray-400">入力なし</span>'}</span>
+                    `;
+                } else {
+                    applicantInfoHTML = `
+                        <span class="text-gray-600 font-semibold">保護団体:</span> <span class="font-medium">${state.organizationName || '<span class="text-gray-400">未選択</span>'}</span>
+                        <span class="text-gray-600 font-semibold">担当者名:</span> <span class="font-medium">${state.staffName || '<span class="text-gray-400">入力なし</span>'}</span>
+                    `;
+                }
 
                 const basicInfoHTML = `
                     <div>
                         <h3 class="text-xl font-bold mb-3 text-gray-900 border-b pb-2">基本情報</h3>
                         <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm mt-3">
-                            <span class="text-gray-600 font-semibold">申込者氏名:</span> <span class="font-medium">${state.applicantName || '<span class="text-gray-400">入力なし</span>'}</span>
+                            ${applicantInfoHTML}
                             <span class="text-gray-600 font-semibold">受診総数:</span> <span class="font-medium">${state.catCount} 匹</span>
-                            <span class="text-gray-600 font-semibold">うち初診:</span> <span class="font-medium">${state.firstVisitCount} 匹</span>
+                            <span class="text-gray-600 font-semibold">うち初診:</span> <span class="font-medium">${firstVisitCatCount} 匹</span>
+                        </div>
+                        <div class="mt-4 pt-3 border-t">
+                            <p class="text-sm font-semibold text-gray-600 mb-2">診療希望日:</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm">
+                                <div><span class="text-gray-500">第1希望:</span> <span class="font-medium">${formatDate(state.preferredDates[0])}</span></div>
+                                <div><span class="text-gray-500">第2希望:</span> <span class="font-medium">${formatDate(state.preferredDates[1])}</span></div>
+                                <div><span class="text-gray-500">第3希望:</span> <span class="font-medium">${formatDate(state.preferredDates[2])}</span></div>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -498,16 +715,29 @@
                         <div class="space-y-4 mt-3">${catSummaryHTML}</div>
                     </div>
                 `;
-                 const pricingHTML = `
+
+                // 診察料の説明
+                const consultationFeeNote = consultationFeeCount < state.catCount
+                    ? `<span class="text-xs text-gray-500 ml-1">(再診で予防薬のみの猫は除く)</span>`
+                    : '';
+
+                const pricingHTML = `
                     <div>
                         <h3 class="text-xl font-bold mb-3 text-gray-900 border-b pb-2">料金概算</h3>
+                        <div class="bg-amber-50 border border-amber-200 p-3 rounded-lg mb-4">
+                            <p class="text-sm text-amber-800">
+                                <i data-lucide="alert-circle" class="inline w-4 h-4 mr-1"></i>
+                                <strong>ご注意:</strong> こちらは概算金額であり、正式な見積書ではありません。実際の診察内容や追加処置により金額が変動する場合があります。
+                            </p>
+                        </div>
                         <div class="space-y-1 text-sm mt-3">
                             <div class="flex justify-between"><span class="text-gray-600">検査・薬代 合計:</span> <span>${subtotalExams.toLocaleString()} 円</span></div>
-                            <div class="flex justify-between"><span class="text-gray-600">診察料 (${state.catCount}匹):</span> <span>${consultationFee.toLocaleString()} 円</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600">診察料 (${consultationFeeCount}匹)${consultationFeeNote}:</span> <span>${consultationFee.toLocaleString()} 円</span></div>
                             <div class="flex justify-between"><span class="text-gray-600">往診料:</span> <span>${visitFee.toLocaleString()} 円</span></div>
                             <div class="flex justify-between font-semibold border-t pt-1 mt-1"><span class="text-gray-700">小計 (税抜):</span> <span>${preTaxTotal.toLocaleString()} 円</span></div>
                             <div class="flex justify-between"><span class="text-gray-600">消費税 (10%):</span> <span>${tax.toLocaleString()} 円</span></div>
-                            <div class="flex justify-between font-bold text-lg border-t pt-1 mt-1"><span class="text-gray-800">合計 (税込):</span> <span>${finalTotal.toLocaleString()} 円</span></div>
+                            ${discountHTML}
+                            <div class="flex justify-between font-bold text-lg border-t pt-1 mt-1"><span class="text-gray-800">概算合計 (税込):</span> <span class="${discountAmount > 0 ? 'text-green-600' : ''}">${finalTotal.toLocaleString()} 円</span></div>
                         </div>
                     </div>
                 `;
@@ -518,9 +748,28 @@
                 lucide.createIcons();
             }
 
+            // 猫が予防薬のみを選択しているかチェック
+            function isOnlyPreventiveMedicine(cat) {
+                const selectedExams = Object.entries(cat.exams).filter(([key, checked]) => checked);
+                if (selectedExams.length === 0) return false;
+
+                // 全ての選択が予防薬カテゴリに含まれるかチェック
+                return selectedExams.every(([examKey, _]) => {
+                    return examData['予防薬'] && examData['予防薬'].items[examKey];
+                });
+            }
+
             function calculateTotal() {
                 let subtotalExams = 0;
+                let consultationFeeCount = 0; // 診察料が必要な猫の数
+
                 state.cats.forEach(cat => {
+                    // 再診で予防薬のみの場合は診察料不要
+                    const needsConsultationFee = cat.isFirstVisit || !isOnlyPreventiveMedicine(cat);
+                    if (needsConsultationFee) {
+                        consultationFeeCount++;
+                    }
+
                     Object.entries(cat.exams).forEach(([examKey, isChecked]) => {
                         if (isChecked) {
                             for (const category in examData) {
@@ -537,25 +786,47 @@
                         }
                     });
                 });
-                
+
                 const visitFee = 5000;
-                const consultationFee = state.catCount * 2000;
+                const consultationFee = consultationFeeCount * 2000;
                 const preTaxTotal = visitFee + consultationFee + subtotalExams;
                 const tax = Math.floor(preTaxTotal * 0.1);
-                const finalTotal = preTaxTotal + tax;
+                let finalTotal = preTaxTotal + tax;
 
-                totalPriceEl.textContent = `${finalTotal.toLocaleString()} 円`;
+                // 保護団体の場合は30%割引
+                let discountAmount = 0;
+                if (state.applicantType === 'organization' && state.organizationId) {
+                    const org = organizations[state.organizationId];
+                    if (org && org.discount) {
+                        discountAmount = Math.floor(finalTotal * org.discount);
+                        finalTotal = finalTotal - discountAmount;
+                    }
+                }
+
+                // 表示更新
+                let priceText = `${finalTotal.toLocaleString()} 円`;
+                if (discountAmount > 0) {
+                    priceText = `<span class="text-green-600">${finalTotal.toLocaleString()} 円</span><span class="text-sm text-gray-500 ml-2">(30%OFF)</span>`;
+                }
+                totalPriceEl.innerHTML = priceText;
             }
 
             function updateStateFromDOM() {
                 const newCatCount = parseInt(catCountInput.value) || 1;
-                
+
                 removeCatButton.disabled = newCatCount <= 1;
+
+                // 5匹以上の場合の警告表示
+                if (newCatCount >= 5) {
+                    scheduleWarning.classList.remove('hidden');
+                } else {
+                    scheduleWarning.classList.add('hidden');
+                }
 
                 if (newCatCount !== state.catCount) {
                     state.catCount = newCatCount;
                     while (state.cats.length < state.catCount) {
-                        state.cats.push({ name: '', sex: '', birthdate: '', age: '', weight: '', medicineCount: 1, exams: {}, symptoms: '', requests: '' });
+                        state.cats.push({ name: '', sex: '', birthdate: '', age: '', weight: '', medicineCount: 1, exams: {}, symptoms: '', requests: '', isFirstVisit: true });
                     }
                     state.cats.length = state.catCount;
                     if (state.activeCatIndex >= state.catCount) {
@@ -565,9 +836,29 @@
                     renderCatTabs();
                     renderExams();
                 }
-                
-                state.applicantName = applicantNameInput.value;
-                state.firstVisitCount = parseInt(firstVisitCountInput.value) || 0;
+
+                // 依頼者タイプ
+                const applicantTypeRadio = document.querySelector('input[name="applicantType"]:checked');
+                state.applicantType = applicantTypeRadio ? applicantTypeRadio.value : 'individual';
+
+                if (state.applicantType === 'individual') {
+                    state.applicantName = applicantNameInput.value;
+                    state.organizationId = '';
+                    state.organizationName = '';
+                    state.staffName = '';
+                } else {
+                    state.organizationId = organizationSelect.value;
+                    state.organizationName = state.organizationId ? organizations[state.organizationId]?.name || '' : '';
+                    state.staffName = staffNameInput.value;
+                    state.applicantName = '';
+                }
+
+                // 診療希望日
+                state.preferredDates = [
+                    document.getElementById('preferredDate1').value,
+                    document.getElementById('preferredDate2').value,
+                    document.getElementById('preferredDate3').value
+                ];
 
                 document.querySelectorAll('#cat-info-container > div').forEach((form, index) => {
                     if (state.cats[index]) {
@@ -578,18 +869,44 @@
                         state.cats[index].weight = form.querySelector('[data-field="weight"]').value;
                         state.cats[index].symptoms = form.querySelector('[data-field="symptoms"]').value;
                         state.cats[index].requests = form.querySelector('[data-field="requests"]').value;
+
+                        const firstVisitRadio = form.querySelector('input[name="visitType-' + index + '"]:checked');
+                        state.cats[index].isFirstVisit = firstVisitRadio ? firstVisitRadio.value === 'first' : true;
                     }
                 });
-                
+
                 renderCatTabs();
                 calculateTotal();
             }
             
             // --- イベントハンドラ ---
+
+            // 依頼者タイプの切り替え
+            document.querySelectorAll('input[name="applicantType"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    if (e.target.value === 'individual') {
+                        individualSection.classList.remove('hidden');
+                        organizationSection.classList.add('hidden');
+                    } else {
+                        individualSection.classList.add('hidden');
+                        organizationSection.classList.remove('hidden');
+                    }
+                    updateStateFromDOM();
+                    lucide.createIcons();
+                });
+            });
+
             applicantNameInput.addEventListener('input', updateStateFromDOM);
+            organizationSelect.addEventListener('change', updateStateFromDOM);
+            staffNameInput.addEventListener('input', updateStateFromDOM);
             catCountInput.addEventListener('change', updateStateFromDOM);
-            firstVisitCountInput.addEventListener('change', updateStateFromDOM);
             catInfoContainer.addEventListener('input', updateStateFromDOM);
+            catInfoContainer.addEventListener('change', updateStateFromDOM);
+
+            // 診療希望日の変更
+            document.querySelectorAll('.preferred-date-select').forEach(select => {
+                select.addEventListener('change', updateStateFromDOM);
+            });
             
             addCatButton.addEventListener('click', () => {
                 const currentCount = parseInt(catCountInput.value);
@@ -747,9 +1064,10 @@
             function init() {
                 if (state.cats.length === 0) {
                     for (let i = 0; i < state.catCount; i++) {
-                        state.cats.push({ name: '', sex: '', birthdate: '', age: '', weight: '', medicineCount: 1, exams: {}, symptoms: '', requests: '' });
+                        state.cats.push({ name: '', sex: '', birthdate: '', age: '', weight: '', medicineCount: 1, exams: {}, symptoms: '', requests: '', isFirstVisit: true });
                     }
                 }
+                populateDateSelects();
                 updateStateFromDOM();
                 renderCatInfoForms();
                 renderCatTabs();
