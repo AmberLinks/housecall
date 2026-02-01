@@ -344,6 +344,12 @@
                     items: {
                         'vaccine': { name: '3種混合ワクチン', price: 4000, description: '猫の日常生活で感染リスクの高い3つの主要なウイルス感染症（猫ウイルス性鼻気管炎, 猫カリシウイルス感染症, 猫汎白血球減少症）を予防します。' }
                     }
+                },
+                '当日相談': {
+                    type: 'checkbox',
+                    items: {
+                        'consultation': { name: '当日相談希望', price: 0, description: '診察当日に獣医師と相談しながら検査内容を決めたい場合は、こちらを選択してください。症状や状態を確認した上で、最適な検査をご提案いたします。' }
+                    }
                 }
             };
 
@@ -431,17 +437,17 @@
                 for (let i = 0; i < state.catCount; i++) {
                     const cat = state.cats[i] || { name: '', sex: '', birthdate: '', age: '', weight: '', symptoms: '', requests: '', isFirstVisit: true };
                     const formHTML = `
-                        <div class="border border-gray-200 p-4 rounded-lg" data-cat-index="${i}">
-                            <div class="flex justify-between items-center mb-3">
+                        <div class="border border-gray-200 p-3 sm:p-4 rounded-lg" data-cat-index="${i}">
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-3">
                                 <p class="font-semibold text-lg text-gray-800">${i + 1}匹目の猫ちゃん</p>
-                                <div class="flex gap-3">
-                                    <label class="flex items-center cursor-pointer px-3 py-1 rounded-full border ${cat.isFirstVisit ? 'bg-blue-100 border-blue-400 text-blue-700' : 'bg-gray-50 border-gray-300 text-gray-600'}">
+                                <div class="flex gap-2 sm:gap-3">
+                                    <label class="flex items-center cursor-pointer px-2 sm:px-3 py-1 rounded-full border text-xs sm:text-sm ${cat.isFirstVisit ? 'bg-blue-100 border-blue-400 text-blue-700' : 'bg-gray-50 border-gray-300 text-gray-600'}">
                                         <input type="radio" name="visitType-${i}" value="first" data-field="isFirstVisit" ${cat.isFirstVisit ? 'checked' : ''} class="w-3 h-3 mr-1">
-                                        <span class="text-sm font-medium">初診</span>
+                                        <span class="font-medium">初診</span>
                                     </label>
-                                    <label class="flex items-center cursor-pointer px-3 py-1 rounded-full border ${!cat.isFirstVisit ? 'bg-green-100 border-green-400 text-green-700' : 'bg-gray-50 border-gray-300 text-gray-600'}">
+                                    <label class="flex items-center cursor-pointer px-2 sm:px-3 py-1 rounded-full border text-xs sm:text-sm ${!cat.isFirstVisit ? 'bg-green-100 border-green-400 text-green-700' : 'bg-gray-50 border-gray-300 text-gray-600'}">
                                         <input type="radio" name="visitType-${i}" value="return" data-field="isFirstVisit" ${!cat.isFirstVisit ? 'checked' : ''} class="w-3 h-3 mr-1">
-                                        <span class="text-sm font-medium">再診</span>
+                                        <span class="font-medium">再診</span>
                                     </label>
                                 </div>
                             </div>
@@ -518,8 +524,26 @@
                 if (!activeCat) return;
                 const activeCatExams = activeCat.exams || {};
 
+                // 便検査・尿検査の選択状況をチェック
+                const needsFecesCollection = activeCatExams['feces_general'] || activeCatExams['feces_parasite'] || activeCatExams['feces_pcr'];
+                const needsUrineCollection = activeCatExams['urine'];
+
+                // 採便・採尿の案内を表示
+                if (needsFecesCollection || needsUrineCollection) {
+                    let collectionNotice = '<div class="bg-purple-50 border border-purple-200 p-3 rounded-lg mb-4"><div class="flex"><div class="flex-shrink-0"><i data-lucide="flask-conical" class="h-5 w-5 text-purple-500"></i></div><div class="ml-3"><p class="text-sm text-purple-800"><strong>事前準備のお願い</strong></p><ul class="text-sm text-purple-700 mt-1 list-disc list-inside">';
+                    if (needsFecesCollection) {
+                        collectionNotice += '<li>便検査をご希望のため、<strong>往診当日の朝〜前日</strong>に採便をお願いします。</li>';
+                    }
+                    if (needsUrineCollection) {
+                        collectionNotice += '<li>尿検査をご希望のため、<strong>往診当日の朝</strong>に採尿をお願いします。</li>';
+                    }
+                    collectionNotice += '</ul><p class="text-xs text-purple-600 mt-2">採取が難しい場合は、当日ご相談ください。</p></div></div></div>';
+                    examContainer.insertAdjacentHTML('beforeend', collectionNotice);
+                }
+
                 Object.entries(examData).forEach(([category, data]) => {
                     const isMedicineCategory = category === '予防薬';
+                    const isConsultationCategory = category === '当日相談';
                     const accordionItemsHTML = Object.entries(data.items).map(([key, item]) => {
                         const isOption = item.isOption;
                         const isBiochemChecked = activeCatExams['biochem'];
@@ -528,39 +552,45 @@
                         const isChecked = activeCatExams[key];
 
                         const medicineInputHTML = isMedicineCategory ? `
-                            <div class="medicine-count-container ml-4 ${isChecked ? '' : 'hidden'}">
+                            <div class="medicine-count-container ml-2 sm:ml-4 ${isChecked ? '' : 'hidden'}">
                                 <label class="block text-xs font-medium text-gray-600 mb-1">個数</label>
-                                <input type="number" data-field="medicineCount" value="${activeCat.medicineCount || 1}" min="1" class="w-20 px-2 py-1 border border-gray-300 rounded-md text-sm">
+                                <input type="number" data-field="medicineCount" value="${activeCat.medicineCount || 1}" min="1" class="w-16 sm:w-20 px-2 py-1 border border-gray-300 rounded-md text-sm">
                             </div>
                         ` : '';
 
+                        // 価格表示（0円の場合は「無料」と表示）
+                        const priceDisplay = item.price === 0 ? '<span class="text-green-600">無料</span>' : `${item.price.toLocaleString()} 円`;
+
                         return `
-                            <div class="p-3 rounded-md transition ${isDisabled ? 'opacity-50' : 'hover:bg-gray-50'}">
+                            <div class="p-2 sm:p-3 rounded-md transition ${isDisabled ? 'opacity-50' : 'hover:bg-gray-50'}">
                                 <div class="flex items-center">
-                                    <label class="flex items-start cursor-pointer flex-grow">
-                                        <input type="${data.type}" name="${category}-${state.activeCatIndex}" value="${key}" data-price="${item.price}" class="custom-checkbox mt-1 h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" ${isChecked ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
-                                        <div class="ml-3 text-sm flex-grow">
-                                            <span class="font-medium text-gray-900">${item.name}</span>
-                                            <p class="text-gray-500">${item.price.toLocaleString()} 円</p>
+                                    <label class="flex items-start cursor-pointer flex-grow min-w-0">
+                                        <input type="${data.type}" name="${category}-${state.activeCatIndex}" value="${key}" data-price="${item.price}" class="custom-checkbox mt-1 h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 flex-shrink-0" ${isChecked ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
+                                        <div class="ml-2 sm:ml-3 text-sm flex-grow min-w-0">
+                                            <span class="font-medium text-gray-900 break-words">${item.name}</span>
+                                            <p class="text-gray-500">${priceDisplay}</p>
                                         </div>
                                     </label>
                                     ${medicineInputHTML}
-                                    <button class="show-description-button text-blue-500 hover:text-blue-700 p-1 ml-2 flex-shrink-0" data-title="${item.name}" data-description="${item.description}">
-                                        <i data-lucide="info" class="w-5 h-5"></i>
+                                    <button class="show-description-button text-blue-500 hover:text-blue-700 p-1 ml-1 sm:ml-2 flex-shrink-0" data-title="${item.name}" data-description="${item.description}">
+                                        <i data-lucide="info" class="w-4 h-4 sm:w-5 sm:h-5"></i>
                                     </button>
                                 </div>
                             </div>
                         `;
                     }).join('');
 
+                    // 当日相談カテゴリは特別なスタイルで表示
+                    const categoryStyle = isConsultationCategory ? 'bg-amber-50 border-amber-300' : 'border-gray-200';
+
                     const accordionHTML = `
-                        <div class="border border-gray-200 rounded-lg">
-                            <button class="accordion-header w-full flex justify-between items-center p-4 text-left font-semibold text-lg">
+                        <div class="border ${categoryStyle} rounded-lg">
+                            <button class="accordion-header w-full flex justify-between items-center p-3 sm:p-4 text-left font-semibold text-base sm:text-lg">
                                 ${category}
-                                <i data-lucide="chevron-down" class="transition-transform duration-300"></i>
+                                <i data-lucide="chevron-down" class="transition-transform duration-300 w-5 h-5"></i>
                             </button>
-                            <div class="accordion-content px-4">
-                                <div class="py-4 border-t border-gray-200 space-y-2">
+                            <div class="accordion-content px-3 sm:px-4">
+                                <div class="py-3 sm:py-4 border-t border-gray-200 space-y-2">
                                     ${accordionItemsHTML}
                                 </div>
                             </div>
@@ -594,7 +624,7 @@
                         for (const category in examData) {
                             if (examData[category].items[examKey]) {
                                 const item = examData[category].items[examKey];
-                                let priceText = `${item.price.toLocaleString()} 円`;
+                                let priceText = item.price === 0 ? '<span class="text-green-600">無料</span>' : `${item.price.toLocaleString()} 円`;
                                 let itemPrice = item.price;
 
                                 if (category === '予防薬') {
@@ -603,7 +633,7 @@
                                     priceText = `${item.price.toLocaleString()} 円 × ${medCount}個 = ${itemPrice.toLocaleString()} 円`;
                                 }
                                 catTotalPrice += itemPrice;
-                                examListHTML += `<li class="flex justify-between"><span>${item.name}</span><span>${priceText}</span></li>`;
+                                examListHTML += `<li class="flex flex-wrap justify-between gap-1"><span class="break-words">${item.name}</span><span>${priceText}</span></li>`;
                                 break;
                             }
                         }
@@ -691,10 +721,59 @@
                     `;
                 }
 
+                // 5匹以上の場合の注記
+                const scheduleWarningHTML = state.catCount >= 5 ? `
+                    <div class="mt-4 bg-amber-50 border-l-4 border-amber-400 p-3 rounded-r-lg">
+                        <p class="text-sm text-amber-800">
+                            <i data-lucide="alert-circle" class="inline w-4 h-4 mr-1"></i>
+                            受診予定の猫が<strong>5匹以上</strong>のため、人員確保や資材調整の都合上、<strong>別途スケジュール調整</strong>が必要となります。上記の希望日は参考情報として受け付けますが、改めて日程調整のご連絡をさせていただきます。
+                        </p>
+                    </div>
+                ` : '';
+
+                // 便検査・尿検査の採便・採尿案内
+                let needsFecesCollection = false;
+                let needsUrineCollection = false;
+                state.cats.forEach(cat => {
+                    if (cat.exams['feces_general'] || cat.exams['feces_parasite'] || cat.exams['feces_pcr']) {
+                        needsFecesCollection = true;
+                    }
+                    if (cat.exams['urine']) {
+                        needsUrineCollection = true;
+                    }
+                });
+
+                let collectionNoticeHTML = '';
+                if (needsFecesCollection || needsUrineCollection) {
+                    let items = [];
+                    if (needsFecesCollection) {
+                        items.push('<li>便検査をご希望のため、<strong>往診当日の朝〜前日</strong>に採便をお願いします。</li>');
+                    }
+                    if (needsUrineCollection) {
+                        items.push('<li>尿検査をご希望のため、<strong>往診当日の朝</strong>に採尿をお願いします。</li>');
+                    }
+                    collectionNoticeHTML = `
+                        <div class="mt-4 bg-purple-50 border border-purple-200 p-3 rounded-lg">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i data-lucide="flask-conical" class="h-5 w-5 text-purple-500"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-purple-800 font-semibold">事前準備のお願い</p>
+                                    <ul class="text-sm text-purple-700 mt-1 list-disc list-inside">
+                                        ${items.join('')}
+                                    </ul>
+                                    <p class="text-xs text-purple-600 mt-2">採取が難しい場合は、当日ご相談ください。</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
                 const basicInfoHTML = `
                     <div>
                         <h3 class="text-xl font-bold mb-3 text-gray-900 border-b pb-2">基本情報</h3>
-                        <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm mt-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-sm mt-3">
                             ${applicantInfoHTML}
                             <span class="text-gray-600 font-semibold">受診総数:</span> <span class="font-medium">${state.catCount} 匹</span>
                             <span class="text-gray-600 font-semibold">うち初診:</span> <span class="font-medium">${firstVisitCatCount} 匹</span>
@@ -707,6 +786,8 @@
                                 <div><span class="text-gray-500">第3希望:</span> <span class="font-medium">${formatDate(state.preferredDates[2])}</span></div>
                             </div>
                         </div>
+                        ${scheduleWarningHTML}
+                        ${collectionNoticeHTML}
                     </div>
                 `;
                 const examsInfoHTML = `
@@ -936,7 +1017,7 @@
                             });
                         }
                     }
-                    
+
                     catExams[key] = isChecked;
 
                     if (key === 'biochem') {
@@ -950,13 +1031,19 @@
                             }
                         });
                     }
-                    
+
                     if (e.target.type === 'radio') {
                          const parent = e.target.closest('.accordion-content');
                          parent.querySelectorAll('.medicine-count-container').forEach(el => el.classList.add('hidden'));
                          if(isChecked) {
                              e.target.closest('.flex.items-center').querySelector('.medicine-count-container')?.classList.remove('hidden');
                          }
+                    }
+
+                    // 便検査・尿検査の選択変更時は採便・採尿案内を更新
+                    const sampleExamKeys = ['feces_general', 'feces_parasite', 'feces_pcr', 'urine'];
+                    if (sampleExamKeys.includes(key)) {
+                        renderExams();
                     }
 
                     calculateTotal();
