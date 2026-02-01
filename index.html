@@ -53,7 +53,7 @@
     <div class="container mx-auto max-w-4xl p-4 sm:p-6 md:p-8">
         <!-- ===== 入力フォームページ ===== -->
         <div id="form-page">
-            <div class="mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+            <div id="individualNotice" class="mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
                 <div class="flex">
                     <div class="flex-shrink-0">
                         <i data-lucide="alert-triangle" class="h-5 w-5 text-yellow-400"></i>
@@ -100,18 +100,18 @@
                         <!-- 保護団体用入力欄 -->
                         <div id="organizationSection" class="hidden space-y-3">
                             <div>
-                                <label for="organizationSelect" class="block text-sm font-medium text-gray-700 mb-1">保護団体名</label>
-                                <select id="organizationSelect" class="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                                <label for="organizationSelect" class="block text-sm font-medium text-gray-700 mb-1">保護団体名 <span class="text-red-500 text-xs">*必須</span></label>
+                                <select id="organizationSelect" class="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" required>
                                     <option value="">選択してください</option>
-                                    <option value="nyanhot_otori">にゃんほっと大鳥居店</option>
+                                    <option value="nyanhot_otori">にゃんほっと大鳥居店 様</option>
                                 </select>
                                 <p class="text-xs text-gray-500 mt-1">
                                     <a href="https://connectpet.jp/carestore" target="_blank" class="text-blue-600 hover:underline">にゃんほっと大鳥居店の詳細 →</a>
                                 </p>
                             </div>
                             <div>
-                                <label for="staffName" class="block text-sm font-medium text-gray-700 mb-1">担当者名</label>
-                                <input type="text" id="staffName" class="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="担当者のお名前">
+                                <label for="staffName" class="block text-sm font-medium text-gray-700 mb-1">担当者名 <span class="text-red-500 text-xs">*必須</span></label>
+                                <input type="text" id="staffName" class="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="担当者のお名前" required>
                             </div>
                             <div class="bg-green-50 border border-green-200 p-3 rounded-lg">
                                 <p class="text-sm text-green-800">
@@ -297,7 +297,7 @@
 
             // --- 保護団体データ ---
             const organizations = {
-                'nyanhot_otori': { name: 'にゃんほっと大鳥居店', discount: 0.30 }
+                'nyanhot_otori': { name: 'にゃんほっと大鳥居店 様', discount: 0.30 }
             };
 
             // --- 検査項目データ ---
@@ -348,7 +348,13 @@
                 '当日相談': {
                     type: 'checkbox',
                     items: {
-                        'consultation': { name: '当日相談希望', price: 0, description: '診察当日に獣医師と相談しながら検査内容を決めたい場合は、こちらを選択してください。症状や状態を確認した上で、最適な検査をご提案いたします。' }
+                        'consultation': { name: '当日相談希望（検査のみ）', price: 0, description: '診察当日に獣医師と相談しながら<strong>検査内容</strong>を決めたい場合は、こちらを選択してください。症状や状態を確認した上で、最適な検査をご提案いたします。<br><br><strong class="text-red-600">※予防薬・ワクチン・マイクロチップは事前のお申し込みが必要です。</strong>当日相談の対象外となりますので、ご希望の方は必ず事前にお選びください。' }
+                    }
+                },
+                '診察': {
+                    type: 'checkbox',
+                    items: {
+                        'examination': { name: '診察希望（症状あり）', price: 0, description: '気になる症状がある場合は、こちらを選択してください。選択後、症状の詳細を入力できます。' }
                     }
                 }
             };
@@ -381,6 +387,7 @@
             const organizationSelect = document.getElementById('organizationSelect');
             const staffNameInput = document.getElementById('staffName');
             const scheduleWarning = document.getElementById('scheduleWarning');
+            const individualNotice = document.getElementById('individualNotice');
 
             // --- 診療希望日の候補日を生成する関数 ---
             function generateAvailableDates() {
@@ -435,7 +442,7 @@
             function renderCatInfoForms() {
                 catInfoContainer.innerHTML = '';
                 for (let i = 0; i < state.catCount; i++) {
-                    const cat = state.cats[i] || { name: '', sex: '', birthdate: '', age: '', weight: '', symptoms: '', requests: '', isFirstVisit: true };
+                    const cat = state.cats[i] || { name: '', sex: '', birthdate: '', age: '', weight: '', requests: '', isFirstVisit: true, symptomWhen: '', symptomWhere: '', symptomHow: '' };
                     const formHTML = `
                         <div class="border border-gray-200 p-3 sm:p-4 rounded-lg" data-cat-index="${i}">
                             <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-3">
@@ -459,13 +466,13 @@
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">名前</label>
-                                    <input type="text" data-field="name" value="${cat.name}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500" placeholder="例：タマ">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">名前 <span class="text-red-500 text-xs">*必須</span></label>
+                                    <input type="text" data-field="name" value="${cat.name}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500" placeholder="例：タマ" required>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">性別 (避妊去勢)</label>
-                                    <select data-field="sex" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500">
-                                        <option value="" ${cat.sex === '' ? 'selected' : ''}>選択</option>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">性別 (避妊去勢) <span class="text-red-500 text-xs">*必須</span></label>
+                                    <select data-field="sex" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500" required>
+                                        <option value="" ${cat.sex === '' ? 'selected' : ''}>選択してください</option>
                                         <option value="オス(未去勢)" ${cat.sex === 'オス(未去勢)' ? 'selected' : ''}>オス (未去勢)</option>
                                         <option value="オス(去勢済)" ${cat.sex === 'オス(去勢済)' ? 'selected' : ''}>オス (去勢済)</option>
                                         <option value="メス(未避妊)" ${cat.sex === 'メス(未避妊)' ? 'selected' : ''}>メス (未避妊)</option>
@@ -473,28 +480,24 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">生年月日 (任意)</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">生年月日 <span class="text-gray-400 text-xs">任意</span></label>
                                     <input type="date" data-field="birthdate" value="${cat.birthdate}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500">
                                 </div>
                                 <div class="grid grid-cols-2 gap-2">
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">年齢</label>
-                                        <input type="number" data-field="age" value="${cat.age}" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500" placeholder="例：5">
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">年齢 <span class="text-red-500 text-xs">*必須</span></label>
+                                        <input type="number" data-field="age" value="${cat.age}" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500" placeholder="例：5" required>
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">体重(kg)</label>
-                                        <input type="number" data-field="weight" value="${cat.weight}" min="0" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500" placeholder="例：4.5">
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">体重(kg) <span class="text-red-500 text-xs">*必須</span></label>
+                                        <input type="number" data-field="weight" value="${cat.weight}" min="0" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500" placeholder="例：4.5" required>
                                     </div>
                                 </div>
                             </div>
-                            <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="mt-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">現在の症状や気になること</label>
-                                    <textarea data-field="symptoms" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500" placeholder="例：食欲不振、嘔吐など">${cat.symptoms}</textarea>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">追加の要望や検査・処置</label>
-                                    <textarea data-field="requests" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500" placeholder="例：爪切り">${cat.requests}</textarea>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">追加の要望や処置 <span class="text-gray-400 text-xs">任意</span></label>
+                                    <textarea data-field="requests" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500" placeholder="例：爪切り、耳掃除など">${cat.requests}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -544,6 +547,7 @@
                 Object.entries(examData).forEach(([category, data]) => {
                     const isMedicineCategory = category === '予防薬';
                     const isConsultationCategory = category === '当日相談';
+                    const isExaminationCategory = category === '診察';
                     const accordionItemsHTML = Object.entries(data.items).map(([key, item]) => {
                         const isOption = item.isOption;
                         const isBiochemChecked = activeCatExams['biochem'];
@@ -555,6 +559,27 @@
                             <div class="medicine-count-container ml-2 sm:ml-4 ${isChecked ? '' : 'hidden'}">
                                 <label class="block text-xs font-medium text-gray-600 mb-1">個数</label>
                                 <input type="number" data-field="medicineCount" value="${activeCat.medicineCount || 1}" min="1" class="w-16 sm:w-20 px-2 py-1 border border-gray-300 rounded-md text-sm">
+                            </div>
+                        ` : '';
+
+                        // 診察カテゴリの場合は問診フォームを表示
+                        const examinationFormHTML = isExaminationCategory ? `
+                            <div class="examination-form mt-3 ${isChecked ? '' : 'hidden'} bg-blue-50 border border-blue-200 p-3 rounded-lg">
+                                <p class="text-sm font-semibold text-blue-800 mb-3"><i data-lucide="clipboard-list" class="inline w-4 h-4 mr-1"></i>問診内容</p>
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="block text-xs font-medium text-blue-700 mb-1">いつから気になりますか？</label>
+                                        <input type="text" data-field="symptomWhen" value="${activeCat.symptomWhen || ''}" class="w-full px-3 py-2 border border-blue-300 rounded-md text-sm focus:ring-1 focus:ring-blue-500" placeholder="例：3日前から、1週間前から、昨日から">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-blue-700 mb-1">どこが気になりますか？</label>
+                                        <input type="text" data-field="symptomWhere" value="${activeCat.symptomWhere || ''}" class="w-full px-3 py-2 border border-blue-300 rounded-md text-sm focus:ring-1 focus:ring-blue-500" placeholder="例：お腹、目、耳、口、足、全身">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-blue-700 mb-1">どのような症状ですか？</label>
+                                        <textarea data-field="symptomHow" rows="3" class="w-full px-3 py-2 border border-blue-300 rounded-md text-sm focus:ring-1 focus:ring-blue-500" placeholder="例：食欲がない、吐く、下痢をする、元気がない、かゆがる、腫れている">${activeCat.symptomHow || ''}</textarea>
+                                    </div>
+                                </div>
                             </div>
                         ` : '';
 
@@ -576,12 +601,26 @@
                                         <i data-lucide="info" class="w-4 h-4 sm:w-5 sm:h-5"></i>
                                     </button>
                                 </div>
+                                ${examinationFormHTML}
                             </div>
                         `;
                     }).join('');
 
-                    // 当日相談カテゴリは特別なスタイルで表示
-                    const categoryStyle = isConsultationCategory ? 'bg-amber-50 border-amber-300' : 'border-gray-200';
+                    // カテゴリごとのスタイル
+                    let categoryStyle = 'border-gray-200';
+                    if (isConsultationCategory) {
+                        categoryStyle = 'bg-amber-50 border-amber-300';
+                    } else if (isExaminationCategory) {
+                        categoryStyle = 'bg-blue-50 border-blue-300';
+                    }
+
+                    // 当日相談の注記
+                    const consultationNote = isConsultationCategory ? `
+                        <div class="mt-2 p-2 bg-red-50 border border-red-200 rounded text-xs text-red-700">
+                            <i data-lucide="alert-triangle" class="inline w-3 h-3 mr-1"></i>
+                            予防薬・ワクチン・マイクロチップは事前のお申し込みが必要です。当日相談の対象外となります。
+                        </div>
+                    ` : '';
 
                     const accordionHTML = `
                         <div class="border ${categoryStyle} rounded-lg">
@@ -592,6 +631,7 @@
                             <div class="accordion-content px-3 sm:px-4">
                                 <div class="py-3 sm:py-4 border-t border-gray-200 space-y-2">
                                     ${accordionItemsHTML}
+                                    ${consultationNote}
                                 </div>
                             </div>
                         </div>
@@ -652,6 +692,21 @@
                         ? '<span class="text-xs text-green-600 ml-2">(予防薬のみのため診察料不要)</span>'
                         : '';
 
+                    // 問診内容（診察を選択した場合のみ表示）
+                    let symptomHTML = '';
+                    if (cat.exams['examination'] && (cat.symptomWhen || cat.symptomWhere || cat.symptomHow)) {
+                        symptomHTML = `
+                            <div class="bg-blue-50 border border-blue-200 p-2 rounded-lg">
+                                <p class="font-semibold text-blue-800 mb-2">問診内容:</p>
+                                <div class="space-y-1 text-blue-700">
+                                    <p><span class="font-medium">いつから:</span> ${cat.symptomWhen || '<span class="text-gray-400">未入力</span>'}</p>
+                                    <p><span class="font-medium">どこが:</span> ${cat.symptomWhere || '<span class="text-gray-400">未入力</span>'}</p>
+                                    <p><span class="font-medium">どのように:</span> ${cat.symptomHow || '<span class="text-gray-400">未入力</span>'}</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+
                     catSummaryHTML += `
                         <div class="pb-4 mb-4 border-b last:border-b-0">
                             <h4 class="font-semibold text-lg text-gray-800">${catName} ${visitTypeLabel} <span class="text-sm font-normal">(${cat.sex || '性別未選択'}, ${cat.age || '?'}歳)</span>${consultationNote}</h4>
@@ -662,10 +717,7 @@
                                     <p class="font-semibold">希望検査:</p>
                                     <ul class="pl-2 text-gray-600">${examListHTML}</ul>
                                 </div>
-                                <div>
-                                    <p class="font-semibold">症状・気になること:</p>
-                                    <p class="pl-2 whitespace-pre-wrap text-gray-600">${cat.symptoms || '<span class="text-gray-400">入力なし</span>'}</p>
-                                </div>
+                                ${symptomHTML}
                                 <div>
                                     <p class="font-semibold">追加の要望:</p>
                                     <p class="pl-2 whitespace-pre-wrap text-gray-600">${cat.requests || '<span class="text-gray-400">入力なし</span>'}</p>
@@ -907,7 +959,7 @@
                 if (newCatCount !== state.catCount) {
                     state.catCount = newCatCount;
                     while (state.cats.length < state.catCount) {
-                        state.cats.push({ name: '', sex: '', birthdate: '', age: '', weight: '', medicineCount: 1, exams: {}, symptoms: '', requests: '', isFirstVisit: true });
+                        state.cats.push({ name: '', sex: '', birthdate: '', age: '', weight: '', medicineCount: 1, exams: {}, requests: '', isFirstVisit: true, symptomWhen: '', symptomWhere: '', symptomHow: '' });
                     }
                     state.cats.length = state.catCount;
                     if (state.activeCatIndex >= state.catCount) {
@@ -968,9 +1020,11 @@
                     if (e.target.value === 'individual') {
                         individualSection.classList.remove('hidden');
                         organizationSection.classList.add('hidden');
+                        individualNotice.classList.remove('hidden');
                     } else {
                         individualSection.classList.add('hidden');
                         organizationSection.classList.remove('hidden');
+                        individualNotice.classList.add('hidden');
                     }
                     updateStateFromDOM();
                     lucide.createIcons();
@@ -1046,14 +1100,37 @@
                         renderExams();
                     }
 
+                    // 診察選択時に問診フォームを表示/非表示
+                    if (key === 'examination') {
+                        const examinationForm = e.target.closest('.p-2, .sm\\:p-3')?.querySelector('.examination-form');
+                        if (examinationForm) {
+                            if (isChecked) {
+                                examinationForm.classList.remove('hidden');
+                            } else {
+                                examinationForm.classList.add('hidden');
+                            }
+                        }
+                        lucide.createIcons();
+                    }
+
                     calculateTotal();
                 }
             });
-            
+
             examContainer.addEventListener('input', (e) => {
                 if (e.target.matches('[data-field="medicineCount"]')) {
                     state.cats[state.activeCatIndex].medicineCount = parseInt(e.target.value) || 1;
                     calculateTotal();
+                }
+                // 問診フォームの入力値を保存
+                if (e.target.matches('[data-field="symptomWhen"]')) {
+                    state.cats[state.activeCatIndex].symptomWhen = e.target.value;
+                }
+                if (e.target.matches('[data-field="symptomWhere"]')) {
+                    state.cats[state.activeCatIndex].symptomWhere = e.target.value;
+                }
+                if (e.target.matches('[data-field="symptomHow"]')) {
+                    state.cats[state.activeCatIndex].symptomHow = e.target.value;
                 }
             });
 
@@ -1151,7 +1228,7 @@
             function init() {
                 if (state.cats.length === 0) {
                     for (let i = 0; i < state.catCount; i++) {
-                        state.cats.push({ name: '', sex: '', birthdate: '', age: '', weight: '', medicineCount: 1, exams: {}, symptoms: '', requests: '', isFirstVisit: true });
+                        state.cats.push({ name: '', sex: '', birthdate: '', age: '', weight: '', medicineCount: 1, exams: {}, requests: '', isFirstVisit: true, symptomWhen: '', symptomWhere: '', symptomHow: '' });
                     }
                 }
                 populateDateSelects();
