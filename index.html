@@ -105,9 +105,6 @@
                                     <option value="">選択してください</option>
                                     <option value="nyanhot_otori">にゃんほっと大鳥居店 様</option>
                                 </select>
-                                <p class="text-xs text-gray-500 mt-1">
-                                    <a href="https://connectpet.jp/carestore" target="_blank" class="text-blue-600 hover:underline">にゃんほっと大鳥居店の詳細 →</a>
-                                </p>
                             </div>
                             <div>
                                 <label for="staffName" class="block text-sm font-medium text-gray-700 mb-1">担当者名 <span class="text-red-500 text-xs">*必須</span></label>
@@ -355,6 +352,12 @@
                     type: 'checkbox',
                     items: {
                         'vaccine': { name: '3種混合ワクチン', price: 4000, description: '猫の日常生活で感染リスクの高い3つの主要なウイルス感染症（猫ウイルス性鼻気管炎, 猫カリシウイルス感染症, 猫汎白血球減少症）を予防します。' }
+                    }
+                },
+                'マイクロチップ': {
+                    type: 'checkbox',
+                    items: {
+                        'microchip': { name: 'マイクロチップ挿入', price: 5000, description: '皮下に小さなマイクロチップを挿入し、猫の個体識別ができるようにします。迷子になった際の身元確認に役立ちます。2022年6月より、ブリーダーやペットショップで販売される犬猫へのマイクロチップ装着が義務化されています。' }
                     }
                 }
             };
