@@ -453,22 +453,24 @@
                 catInfoContainer.innerHTML = '';
                 for (let i = 0; i < state.catCount; i++) {
                     const cat = state.cats[i] || { name: '', sex: '', birthdate: '', age: '', weight: '', requests: '', isFirstVisit: true, symptomWhen: '', symptomWhere: '', symptomHow: '' };
+                    // isFirstVisit が undefined の場合は true をデフォルトにする
+                    const isFirstVisit = cat.isFirstVisit !== false;
                     const formHTML = `
                         <div class="border border-gray-200 p-3 sm:p-4 rounded-lg" data-cat-index="${i}">
                             <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-3">
                                 <p class="font-semibold text-lg text-gray-800">${i + 1}匹目の猫ちゃん</p>
                                 <div class="flex gap-2 sm:gap-3">
-                                    <label class="flex items-center cursor-pointer px-2 sm:px-3 py-1 rounded-full border text-xs sm:text-sm ${cat.isFirstVisit ? 'bg-blue-100 border-blue-400 text-blue-700' : 'bg-gray-50 border-gray-300 text-gray-600'}">
-                                        <input type="radio" name="visitType-${i}" value="first" data-field="isFirstVisit" ${cat.isFirstVisit ? 'checked' : ''} class="w-3 h-3 mr-1">
+                                    <label class="flex items-center cursor-pointer px-2 sm:px-3 py-1 rounded-full border text-xs sm:text-sm ${isFirstVisit ? 'bg-blue-100 border-blue-400 text-blue-700' : 'bg-gray-50 border-gray-300 text-gray-600'}">
+                                        <input type="radio" name="visitType-${i}" value="first" data-field="isFirstVisit" ${isFirstVisit ? 'checked' : ''} class="w-3 h-3 mr-1">
                                         <span class="font-medium">初診</span>
                                     </label>
-                                    <label class="flex items-center cursor-pointer px-2 sm:px-3 py-1 rounded-full border text-xs sm:text-sm ${!cat.isFirstVisit ? 'bg-green-100 border-green-400 text-green-700' : 'bg-gray-50 border-gray-300 text-gray-600'}">
-                                        <input type="radio" name="visitType-${i}" value="return" data-field="isFirstVisit" ${!cat.isFirstVisit ? 'checked' : ''} class="w-3 h-3 mr-1">
+                                    <label class="flex items-center cursor-pointer px-2 sm:px-3 py-1 rounded-full border text-xs sm:text-sm ${!isFirstVisit ? 'bg-green-100 border-green-400 text-green-700' : 'bg-gray-50 border-gray-300 text-gray-600'}">
+                                        <input type="radio" name="visitType-${i}" value="return" data-field="isFirstVisit" ${!isFirstVisit ? 'checked' : ''} class="w-3 h-3 mr-1">
                                         <span class="font-medium">再診</span>
                                     </label>
                                 </div>
                             </div>
-                            <div id="returnVisitNote-${i}" class="${!cat.isFirstVisit ? '' : 'hidden'} mb-3 bg-green-50 border border-green-200 p-2 rounded-md">
+                            <div id="returnVisitNote-${i}" class="${!isFirstVisit ? '' : 'hidden'} mb-3 bg-green-50 border border-green-200 p-2 rounded-md">
                                 <p class="text-xs text-green-700">
                                     <i data-lucide="info" class="inline w-3 h-3 mr-1"></i>
                                     再診の猫で<strong>寄生虫の予防薬のみ</strong>をご希望の場合は、診察料は不要です。
@@ -536,23 +538,6 @@
                 const activeCat = state.cats[state.activeCatIndex];
                 if (!activeCat) return;
                 const activeCatExams = activeCat.exams || {};
-
-                // 便検査・尿検査の選択状況をチェック
-                const needsFecesCollection = activeCatExams['feces_general'] || activeCatExams['feces_parasite'] || activeCatExams['feces_pcr'];
-                const needsUrineCollection = activeCatExams['urine'];
-
-                // 採便・採尿の案内を表示
-                if (needsFecesCollection || needsUrineCollection) {
-                    let collectionNotice = '<div class="bg-purple-50 border border-purple-200 p-3 rounded-lg mb-4"><div class="flex"><div class="flex-shrink-0"><i data-lucide="flask-conical" class="h-5 w-5 text-purple-500"></i></div><div class="ml-3"><p class="text-sm text-purple-800"><strong>事前準備のお願い</strong></p><ul class="text-sm text-purple-700 mt-1 list-disc list-inside">';
-                    if (needsFecesCollection) {
-                        collectionNotice += '<li>便検査をご希望のため、<strong>往診当日の朝〜前日</strong>に採便をお願いします。</li>';
-                    }
-                    if (needsUrineCollection) {
-                        collectionNotice += '<li>尿検査をご希望のため、<strong>往診当日の朝</strong>に採尿をお願いします。</li>';
-                    }
-                    collectionNotice += '</ul><p class="text-xs text-purple-600 mt-2">採取が難しい場合は、当日ご相談ください。</p></div></div></div>';
-                    examContainer.insertAdjacentHTML('beforeend', collectionNotice);
-                }
 
                 Object.entries(examData).forEach(([category, data]) => {
                     const isMedicineCategory = category === '予防薬';
@@ -1107,12 +1092,6 @@
                          if(isChecked) {
                              e.target.closest('.flex.items-center').querySelector('.medicine-count-container')?.classList.remove('hidden');
                          }
-                    }
-
-                    // 便検査・尿検査の選択変更時は採便・採尿案内を更新
-                    const sampleExamKeys = ['feces_general', 'feces_parasite', 'feces_pcr', 'urine'];
-                    if (sampleExamKeys.includes(key)) {
-                        renderExams();
                     }
 
                     // 診察選択時に問診フォームを表示/非表示
