@@ -196,7 +196,14 @@
                 <div class="max-w-4xl mx-auto flex justify-between items-center">
                     <div>
                         <p class="text-sm text-gray-600">概算合計金額 (税込) <span class="text-xs text-amber-600">※見積書ではありません</span></p>
-                        <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="total-price">0 円</p>
+                        <div id="price-display">
+                            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="total-price">0 円</p>
+                        </div>
+                        <div id="discount-display" class="hidden">
+                            <p class="text-sm text-gray-400 line-through" id="original-price"></p>
+                            <p class="text-2xl sm:text-3xl font-bold text-green-600" id="discounted-price"></p>
+                            <p class="text-xs text-green-600" id="discount-amount"></p>
+                        </div>
                     </div>
                     <button id="show-confirm-button" class="bg-blue-600 text-white font-bold py-3 px-6 sm:px-8 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all transform hover:scale-105">
                         内容を確認する
@@ -924,6 +931,7 @@
 
                 // 保護団体の場合は30%割引
                 let discountAmount = 0;
+                const originalTotal = finalTotal;
                 if (state.applicantType === 'organization' && state.organizationId) {
                     const org = organizations[state.organizationId];
                     if (org && org.discount) {
@@ -933,11 +941,23 @@
                 }
 
                 // 表示更新
-                let priceText = `${finalTotal.toLocaleString()} 円`;
+                const priceDisplay = document.getElementById('price-display');
+                const discountDisplay = document.getElementById('discount-display');
+                const originalPriceEl = document.getElementById('original-price');
+                const discountedPriceEl = document.getElementById('discounted-price');
+                const discountAmountEl = document.getElementById('discount-amount');
+
                 if (discountAmount > 0) {
-                    priceText = `<span class="text-green-600">${finalTotal.toLocaleString()} 円</span><span class="text-sm text-gray-500 ml-2">(30%OFF)</span>`;
+                    priceDisplay.classList.add('hidden');
+                    discountDisplay.classList.remove('hidden');
+                    originalPriceEl.textContent = `${originalTotal.toLocaleString()} 円`;
+                    discountedPriceEl.textContent = `${finalTotal.toLocaleString()} 円`;
+                    discountAmountEl.textContent = `保護団体割引 30%OFF（-${discountAmount.toLocaleString()} 円）`;
+                } else {
+                    priceDisplay.classList.remove('hidden');
+                    discountDisplay.classList.add('hidden');
+                    totalPriceEl.textContent = `${finalTotal.toLocaleString()} 円`;
                 }
-                totalPriceEl.innerHTML = priceText;
             }
 
             function updateStateFromDOM() {
