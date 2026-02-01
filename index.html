@@ -53,7 +53,7 @@
     <div class="container mx-auto max-w-4xl p-4 sm:p-6 md:p-8">
         <!-- ===== 入力フォームページ ===== -->
         <div id="form-page">
-            <div id="individualNotice" class="mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+            <div id="individualNotice" class="mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg hidden">
                 <div class="flex">
                     <div class="flex-shrink-0">
                         <i data-lucide="alert-triangle" class="h-5 w-5 text-yellow-400"></i>
@@ -81,24 +81,24 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2">依頼者タイプ</label>
                             <div class="flex flex-wrap gap-3">
                                 <label class="flex items-center cursor-pointer">
-                                    <input type="radio" name="applicantType" value="individual" checked class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
-                                    <span class="ml-2 text-sm">個人</span>
+                                    <input type="radio" name="applicantType" value="organization" checked class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                    <span class="ml-2 text-sm">保護団体</span>
                                 </label>
                                 <label class="flex items-center cursor-pointer">
-                                    <input type="radio" name="applicantType" value="organization" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
-                                    <span class="ml-2 text-sm">保護団体</span>
+                                    <input type="radio" name="applicantType" value="individual" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                    <span class="ml-2 text-sm">個人</span>
                                 </label>
                             </div>
                         </div>
 
                         <!-- 個人用入力欄 -->
-                        <div id="individualSection">
+                        <div id="individualSection" class="hidden">
                             <label for="applicantName" class="block text-sm font-medium text-gray-700 mb-1">申込者氏名</label>
                             <input type="text" id="applicantName" class="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="山田 花子">
                         </div>
 
                         <!-- 保護団体用入力欄 -->
-                        <div id="organizationSection" class="hidden space-y-3">
+                        <div id="organizationSection" class="space-y-3">
                             <div>
                                 <label for="organizationSelect" class="block text-sm font-medium text-gray-700 mb-1">保護団体名 <span class="text-red-500 text-xs">*必須</span></label>
                                 <select id="organizationSelect" class="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" required>
@@ -284,7 +284,7 @@
 
             // --- 状態管理オブジェクト ---
             let state = {
-                applicantType: 'individual', // 'individual' or 'organization'
+                applicantType: 'organization', // 'individual' or 'organization'
                 applicantName: '',
                 organizationId: '',
                 organizationName: '',
@@ -302,6 +302,18 @@
 
             // --- 検査項目データ ---
             const examData = {
+                '診察': {
+                    type: 'checkbox',
+                    items: {
+                        'examination': { name: '診察希望（症状あり）', price: 0, description: '気になる症状がある場合は、こちらを選択してください。選択後、症状の詳細を入力できます。' }
+                    }
+                },
+                '当日相談': {
+                    type: 'checkbox',
+                    items: {
+                        'consultation': { name: '当日相談希望（検査のみ）', price: 0, description: '診察当日に獣医師と相談しながら検査内容を決めたい場合は、こちらを選択してください。症状や状態を確認した上で、最適な検査をご提案いたします。※予防薬・ワクチン・マイクロチップは事前のお申し込みが必要です。' }
+                    }
+                },
                 '予防薬': {
                     type: 'radio',
                     items: {
@@ -343,18 +355,6 @@
                     type: 'checkbox',
                     items: {
                         'vaccine': { name: '3種混合ワクチン', price: 4000, description: '猫の日常生活で感染リスクの高い3つの主要なウイルス感染症（猫ウイルス性鼻気管炎, 猫カリシウイルス感染症, 猫汎白血球減少症）を予防します。' }
-                    }
-                },
-                '当日相談': {
-                    type: 'checkbox',
-                    items: {
-                        'consultation': { name: '当日相談希望（検査のみ）', price: 0, description: '診察当日に獣医師と相談しながら<strong>検査内容</strong>を決めたい場合は、こちらを選択してください。症状や状態を確認した上で、最適な検査をご提案いたします。<br><br><strong class="text-red-600">※予防薬・ワクチン・マイクロチップは事前のお申し込みが必要です。</strong>当日相談の対象外となりますので、ご希望の方は必ず事前にお選びください。' }
-                    }
-                },
-                '診察': {
-                    type: 'checkbox',
-                    items: {
-                        'examination': { name: '診察希望（症状あり）', price: 0, description: '気になる症状がある場合は、こちらを選択してください。選択後、症状の詳細を入力できます。' }
                     }
                 }
             };
@@ -608,19 +608,12 @@
 
                     // カテゴリごとのスタイル
                     let categoryStyle = 'border-gray-200';
-                    if (isConsultationCategory) {
-                        categoryStyle = 'bg-amber-50 border-amber-300';
-                    } else if (isExaminationCategory) {
+                    if (isExaminationCategory) {
                         categoryStyle = 'bg-blue-50 border-blue-300';
                     }
 
-                    // 当日相談の注記
-                    const consultationNote = isConsultationCategory ? `
-                        <div class="mt-2 p-2 bg-red-50 border border-red-200 rounded text-xs text-red-700">
-                            <i data-lucide="alert-triangle" class="inline w-3 h-3 mr-1"></i>
-                            予防薬・ワクチン・マイクロチップは事前のお申し込みが必要です。当日相談の対象外となります。
-                        </div>
-                    ` : '';
+                    // 当日相談の注記（削除済み - 他の項目と同じシンプルな表示に）
+                    const consultationNote = '';
 
                     const accordionHTML = `
                         <div class="border ${categoryStyle} rounded-lg">
